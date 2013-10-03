@@ -9,8 +9,6 @@ In which we find out what the point of this whole thing is.
 
 <span class="more"></span>
 
-# Introduction #
-
 I am currently studying an MSc in Computer Science. Part of the mandatory curriculum is a course called 'Global Software Development', in which groups of students from different countries, are tasked with writing non-trivial software systems in a programming language called Eiffel.
 
 I know next to nothing about Eiffel.

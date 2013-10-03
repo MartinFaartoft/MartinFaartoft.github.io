@@ -4,7 +4,7 @@
     <title>ftft</title>
     <atom:link href="http://ftft.dk/feed.xml" rel="self" type="application/rss+xml"></atom:link>
     <link>http://ftft.dk</link>
-    <description>If I write it down I don't have to remember it</description>
+    <description>Writing things down so I don't have to remember</description>
     <pubDate>Thu, 03 Oct 2013 02:00:00 +0200</pubDate>
     <generator>Wintersmith - https://github.com/jnordberg/wintersmith</generator>
     <language>en</language>
@@ -16,7 +16,6 @@
       <author></author>
       <description>&lt;p&gt;In which we find out what the point of this whole thing is.&lt;/p&gt;
 &lt;p&gt;&lt;span class=&quot;more&quot;&gt;&lt;/span&gt;&lt;/p&gt;
-&lt;h1&gt;Introduction&lt;/h1&gt;
 &lt;p&gt;I am currently studying an MSc in Computer Science. Part of the mandatory curriculum is a course called ‘Global Software Development’, in which groups of students from different countries, are tasked with writing non-trivial software systems in a programming language called Eiffel.&lt;/p&gt;
 &lt;p&gt;I know next to nothing about Eiffel.&lt;/p&gt;
 &lt;p&gt;Eiffel is an old, and somewhat obscure language. Google searches usually come back with results related to the tower in Paris, or if you are really lucky, with a result related to your problem, explaining how to solve it in Eiffel version 6.x, when the syntax was significantly different. (current version is 7.3).&lt;/p&gt;
@@ -32,7 +31,6 @@
       <author></author>
       <description>&lt;p&gt;In which we install Eiffel Studio and look closely at the Hello World example.&lt;/p&gt;
 &lt;p&gt;&lt;span class=&quot;more&quot;&gt;&lt;/span&gt;&lt;/p&gt;
-&lt;h1&gt;Getting Started&lt;/h1&gt;
 &lt;h2&gt;Installing Eiffel Studio 7.3&lt;/h2&gt;
 &lt;p&gt;Go and grab &lt;a href=&quot;https://www2.eiffel.com/download/download_info.aspx?id=eiffelstudio&amp;amp;info=false&amp;amp;mirrors=eiffelstudio&quot;&gt;Eiffel Studio 7.3&lt;/a&gt; (requires a free account, but at the time of writing, your friends at &lt;a href=&quot;http://www.bugmenot.com/&quot;&gt;bugmenot&lt;/a&gt; have got you covered).&lt;/p&gt;
 &lt;p&gt;Installation on Windows is straightforward. If you wanna install it on mac, be warned - nobody in our class, instructors included, could get it to run on OS X in a stable manner. It works just fine on a virtual machine though.&lt;/p&gt;
@@ -75,8 +73,8 @@ end&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Random thoughts from playing with Hello World:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;em&gt;%&lt;/em&gt; is the character escape sequence&lt;/li&gt;
-&lt;li&gt;single line comments start with &lt;em&gt;—&lt;/em&gt;&lt;/li&gt;
-&lt;li&gt;Eiffel is not overly sensitive to whitespace, linebreaks and tab indents do not carry any meaning (think Java or C#).&lt;/li&gt;
+&lt;li&gt;single line comments start with two dashes: &lt;em&gt;- -&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;Eiffel does not care about whitespace. Linebreaks and tab indents are purely cosmetic (think Java or C#).&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Next up: Flow control and more syntax!&lt;/p&gt;
 </description>
