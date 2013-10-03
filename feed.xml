@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>ftft</title>
-    <atom:link href="http:ftft.dk/feed.xml" rel="self" type="application/rss+xml"></atom:link>
-    <link>http:ftft.dk</link>
+    <atom:link href="http://ftft.dk/feed.xml" rel="self" type="application/rss+xml"></atom:link>
+    <link>http://ftft.dk</link>
     <description>If I write it down I don't have to remember it</description>
     <pubDate>Thu, 03 Oct 2013 02:00:00 +0200</pubDate>
     <generator>Wintersmith - https://github.com/jnordberg/wintersmith</generator>
     <language>en</language>
     <item>
       <title>Introduction</title>
-      <link>http:ftft.dk/articles/introduction/</link>
+      <link>http://ftft.dk/articles/introduction/</link>
       <pubDate>Thu, 03 Oct 2013 02:00:00 +0200</pubDate>
-      <guid isPermaLink="true">http:ftft.dk/articles/introduction/</guid>
+      <guid isPermaLink="true">http://ftft.dk/articles/introduction/</guid>
       <author></author>
       <description>&lt;p&gt;In which we find out what the point of this whole thing is.&lt;/p&gt;
 &lt;p&gt;&lt;span class=&quot;more&quot;&gt;&lt;/span&gt;&lt;/p&gt;
@@ -26,9 +26,9 @@
     </item>
     <item>
       <title>Getting Started</title>
-      <link>http:ftft.dk/articles/getting-started/</link>
+      <link>http://ftft.dk/articles/getting-started/</link>
       <pubDate>Thu, 03 Oct 2013 02:00:00 +0200</pubDate>
-      <guid isPermaLink="true">http:ftft.dk/articles/getting-started/</guid>
+      <guid isPermaLink="true">http://ftft.dk/articles/getting-started/</guid>
       <author></author>
       <description>&lt;p&gt;In which we install Eiffel Studio and look closely at the Hello World example.&lt;/p&gt;
 &lt;p&gt;&lt;span class=&quot;more&quot;&gt;&lt;/span&gt;&lt;/p&gt;
@@ -36,7 +36,7 @@
 &lt;h2&gt;Installing Eiffel Studio 7.3&lt;/h2&gt;
 &lt;p&gt;Go and grab &lt;a href=&quot;https://www2.eiffel.com/download/download_info.aspx?id=eiffelstudio&amp;amp;info=false&amp;amp;mirrors=eiffelstudio&quot;&gt;Eiffel Studio 7.3&lt;/a&gt; (requires a free account, but at the time of writing, your friends at &lt;a href=&quot;http://www.bugmenot.com/&quot;&gt;bugmenot&lt;/a&gt; have got you covered).&lt;/p&gt;
 &lt;p&gt;Installation on Windows is straightforward. If you wanna install it on mac, be warned - nobody in our class, instructors included, could get it to run on OS X in a stable manner. It works just fine on a virtual machine though.&lt;/p&gt;
-&lt;p&gt;After installing, you should be able to start Eiffel Studio and get a screen looking somewhat like this one: &lt;img src=&quot;http:ftft.dk/articles/getting-started/le_image.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;After installing, you should be able to start Eiffel Studio and get a screen looking somewhat like this one: &lt;img src=&quot;http://ftft.dk/articles/getting-started/le_image.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
 &lt;h2&gt;Hello World&lt;/h2&gt;
 &lt;p&gt;Go ahead and create a new Basic Application, this should generate a new project for you, with the following &lt;em&gt;APPLICATION&lt;/em&gt; class (Eiffel classnames are all uppercase)&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;note
