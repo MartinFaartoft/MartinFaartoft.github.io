@@ -1,7 +1,7 @@
 {
   "output": "../",
   "locals": {
-    "url": "http:ftft.dk",
+    "url": "http://ftft.dk",
     "name": "ftft",
     "owner": "Martin Faartoft",
     "description": "If I write it down I don't have to remember it"
