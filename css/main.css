@@ -101,8 +101,6 @@ hr {
 
 .header .author {
   font-family: 'Merriweather', serif;
-  font-variant: small-caps;
-  text-transform: lowercase;
   text-rendering: auto;
   text-align: center;
   font-weight: 400;
@@ -215,16 +213,20 @@ footer .copy, footer .copy a {
 
 .article .content img {
   display: block;
-  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .more, .date {
-  font-family: 'Merriweather', serif;
   font-variant: small-caps;
   text-transform: lowercase;
   font-weight: 400;
   text-rendering: auto;
   letter-spacing: 1px;
+}
+
+.date {
+  font-family: 'Merriweather', serif;
 }
 
 /* archive */

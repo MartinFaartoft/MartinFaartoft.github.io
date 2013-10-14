@@ -9,21 +9,6 @@
     <generator>Wintersmith - https://github.com/jnordberg/wintersmith</generator>
     <language>en</language>
     <item>
-      <title>Introduction</title>
-      <link>http://ftft.dk/articles/introduction/</link>
-      <pubDate>Thu, 03 Oct 2013 02:00:00 +0200</pubDate>
-      <guid isPermaLink="true">http://ftft.dk/articles/introduction/</guid>
-      <author></author>
-      <description>&lt;p&gt;In which we find out what the point of this whole thing is.&lt;/p&gt;
-&lt;p&gt;&lt;span class=&quot;more&quot;&gt;&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;I am currently studying an MSc in Computer Science. Part of the mandatory curriculum is a course called ‘Global Software Development’, in which groups of students from different countries, are tasked with writing non-trivial software systems in a programming language called Eiffel.&lt;/p&gt;
-&lt;p&gt;I know next to nothing about Eiffel.&lt;/p&gt;
-&lt;p&gt;Eiffel is an old, and somewhat obscure language. Google searches usually come back with results related to the tower in Paris, or if you are really lucky, with a result related to your problem, explaining how to solve it in Eiffel version 6.x, when the syntax was significantly different. (current version is 7.3).&lt;/p&gt;
-&lt;p&gt;So to make the Internet an infinitesimally better place, I will write a series of posts about how to program in Eiffel 7.3.&lt;/p&gt;
-&lt;p&gt;Apologies in advance for all the things I will get wrong. I&amp;#39;m learning this stuff as I go along.&lt;/p&gt;
-</description>
-    </item>
-    <item>
       <title>Getting Started</title>
       <link>http://ftft.dk/articles/getting-started/</link>
       <pubDate>Thu, 03 Oct 2013 02:00:00 +0200</pubDate>
@@ -34,7 +19,8 @@
 &lt;h2&gt;Installing Eiffel Studio 7.3&lt;/h2&gt;
 &lt;p&gt;Go and grab &lt;a href=&quot;https://www2.eiffel.com/download/download_info.aspx?id=eiffelstudio&amp;amp;info=false&amp;amp;mirrors=eiffelstudio&quot;&gt;Eiffel Studio 7.3&lt;/a&gt; (requires a free account, but at the time of writing, your friends at &lt;a href=&quot;http://www.bugmenot.com/&quot;&gt;bugmenot&lt;/a&gt; have got you covered).&lt;/p&gt;
 &lt;p&gt;Installation on Windows is straightforward. If you wanna install it on mac, be warned - nobody in our class, instructors included, could get it to run on OS X in a stable manner. It works just fine on a virtual machine though.&lt;/p&gt;
-&lt;p&gt;After installing, you should be able to start Eiffel Studio and get a screen looking somewhat like this one: &lt;img src=&quot;http://ftft.dk/articles/getting-started/le_image.png&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;After installing, you should be able to start Eiffel Studio and get a screen looking somewhat like this one:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://ftft.dk/articles/getting-started/create_project.png&quot; alt=&quot;Create Project Dialog&quot; title=&quot;Create Project Dialog&quot;&gt;&lt;/p&gt;
 &lt;h2&gt;Hello World&lt;/h2&gt;
 &lt;p&gt;Go ahead and create a new Basic Application, this should generate a new project for you, with the following &lt;em&gt;APPLICATION&lt;/em&gt; class (Eiffel classnames are all uppercase)&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;note
@@ -77,6 +63,21 @@ end&lt;/code&gt;&lt;/pre&gt;
 &lt;li&gt;Eiffel does not care about whitespace. Linebreaks and tab indents are purely cosmetic (think Java or C#).&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Next up: Flow control and more syntax!&lt;/p&gt;
+</description>
+    </item>
+    <item>
+      <title>Introduction</title>
+      <link>http://ftft.dk/articles/introduction/</link>
+      <pubDate>Thu, 03 Oct 2013 02:00:00 +0200</pubDate>
+      <guid isPermaLink="true">http://ftft.dk/articles/introduction/</guid>
+      <author></author>
+      <description>&lt;p&gt;In which we find out what the point of this whole thing is.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&quot;more&quot;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;I am currently studying an MSc in Computer Science. Part of the mandatory curriculum is a course called ‘Global Software Development’, in which groups of students from different countries, are tasked with writing non-trivial software systems in a programming language called Eiffel.&lt;/p&gt;
+&lt;p&gt;I know next to nothing about Eiffel.&lt;/p&gt;
+&lt;p&gt;Eiffel is an old, and somewhat obscure language. Google searches usually come back with results related to the tower in Paris, or if you are really lucky, with a result related to your problem, explaining how to solve it in Eiffel version 6.x, when the syntax was significantly different. (current version is 7.3).&lt;/p&gt;
+&lt;p&gt;So to make the Internet an infinitesimally better place, I will write a series of posts about how to program in Eiffel 7.3.&lt;/p&gt;
+&lt;p&gt;Apologies in advance for all the things I will get wrong. I&amp;#39;m learning this stuff as I go along.&lt;/p&gt;
 </description>
     </item>
   </channel>

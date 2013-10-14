@@ -14,8 +14,9 @@ Go and grab [Eiffel Studio 7.3](https://www2.eiffel.com/download/download_info.a
 
 Installation on Windows is straightforward. If you wanna install it on mac, be warned - nobody in our class, instructors included, could get it to run on OS X in a stable manner. It works just fine on a virtual machine though.
 
-After installing, you should be able to start Eiffel Studio and get a screen looking somewhat like this one: ![](le_image.png)
+After installing, you should be able to start Eiffel Studio and get a screen looking somewhat like this one:
 
+![Create Project Dialog](create_project.png "Create Project Dialog")
 ## Hello World ##
 Go ahead and create a new Basic Application, this should generate a new project for you, with the following _APPLICATION_ class (Eiffel classnames are all uppercase)
 
