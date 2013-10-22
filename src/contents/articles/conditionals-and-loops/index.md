@@ -60,7 +60,7 @@ It takes up a lot of vertical screen space, but works just like you would expect
 or, looping over a collection of objects
 
 	from
-		sum := 0 ; collection.start --initialize
+		collection.start --initialize
 	until
 		collection.after --stop when our collection pointer points after the last element
 	loop

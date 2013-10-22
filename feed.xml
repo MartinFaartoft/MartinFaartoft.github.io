@@ -91,7 +91,7 @@ loop
 end&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;or, looping over a collection of objects&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;from
-    sum := 0 ; collection.start --initialize
+    collection.start --initialize
 until
     collection.after --stop when our collection pointer points after the last element
 loop
