@@ -9,9 +9,46 @@
     <generator>Wintersmith - https://github.com/jnordberg/wintersmith</generator>
     <language>en</language>
     <item>
+      <title>.gitignore</title>
+      <link>http://ftft.dk/articles/gitignore/</link>
+      <pubDate>Tue, 22 Oct 2013 02:00:00 +0200</pubDate>
+      <guid isPermaLink="true">http://ftft.dk/articles/gitignore/</guid>
+      <author></author>
+      <description>&lt;p&gt;In which we consider what to put in the .gitignore file for EiffelStudio projects.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&quot;more&quot;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;As a rule of thumb, you should never add auto-generated files to source control. But exceptions must be made - for example with the Diagrams you draw inside Eiffel Studio.&lt;/p&gt;
+&lt;p&gt;Let&amp;#39;s have a look at the file structure of a new EiffelStudio project.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;application.e
+hello_world.ecf
+hello_world.rc
+EIFGENs
+EIFGENs/hello_world/
+EIFGENs/hello_world/project.epr
+EIFGENs/hello_world/BACKUP/
+EIFGENs/hello_world/COMP/
+EIFGENs/hello_world/Cluster/
+EIFGENs/hello_world/Data/
+EIFGENs/hello_world/Diagrams/
+EIFGENs/hello_world/F_code/
+EIFGENs/hello_world/Partials/
+EIFGENs/hello_world/Testing/
+EIFGENs/hello_world/W_code/&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;em&gt;.e files are your source code files.
+The &lt;/em&gt;.ecf files contains metadata about your project, like name of primary cluster, and type of application&lt;/p&gt;
+&lt;p&gt;Everything in the EIFGENs directory is created by EiffelStudio, and will be regenerated when required, based on our .e files. &lt;/p&gt;
+&lt;p&gt;So we should exclude everything in EIFGENs from source control, except the Diagrams subdirectory, since that is where our user-created diagrams live.&lt;/p&gt;
+&lt;p&gt;Example .gitignore file:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;*.log
+
+#Ignore everything in EIFGENs, except the Diagrams subdirectory
+EIFGENs/**/*
+!EIFGENs/*/Diagrams/&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    <item>
       <title>Conditionals and Loops</title>
       <link>http://ftft.dk/articles/conditionals-and-loops/</link>
-      <pubDate>Tue, 22 Oct 2013 02:00:00 +0200</pubDate>
+      <pubDate>Mon, 21 Oct 2013 02:00:00 +0200</pubDate>
       <guid isPermaLink="true">http://ftft.dk/articles/conditionals-and-loops/</guid>
       <author></author>
       <description>&lt;p&gt;In which we look at flow control structures in Eiffel.&lt;/p&gt;

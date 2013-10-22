@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+    <title>.gitignore - ftft
+    </title>
+    <link rel="alternate" href="http://ftft.dk/feed.xml" type="application/rss+xml" title="Writing things down so I don't have to remember">
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic|Anonymous+Pro:400,700,400italic,700italic|Merriweather:400,700,300">
+    <link rel="stylesheet" href="/css/main.css">
+  </head>
+  <body class="article-detail">
+    <header class="header">
+      <div class="content-wrap">
+        <h1>.gitignore</h1>
+        <p class="author">by <span class="author"><a href="mailto:martin.faartoft@gmail.com">Martin Faartoft</a></span>
+        </p>
+      </div>
+    </header>
+    <div id="content">
+      <div class="content-wrap">
+        <article class="article">
+          <section class="content"><p>In which we consider what to put in the .gitignore file for EiffelStudio&nbsp;projects.</p>
+<p><span class="more"></span></p>
+<p>As a rule of thumb, you should never add auto-generated files to source control. But exceptions must be made - for example with the Diagrams you draw inside Eiffel&nbsp;Studio.</p>
+<p>Let&#39;s have a look at the file structure of a new EiffelStudio&nbsp;project.</p>
+<pre><code>application.e
+hello_world.ecf
+hello_world.rc
+EIFGENs
+EIFGENs/hello_world/
+EIFGENs/hello_world/project.epr
+EIFGENs/hello_world/BACKUP/
+EIFGENs/hello_world/COMP/
+EIFGENs/hello_world/Cluster/
+EIFGENs/hello_world/Data/
+EIFGENs/hello_world/Diagrams/
+EIFGENs/hello_world/F_code/
+EIFGENs/hello_world/Partials/
+EIFGENs/hello_world/Testing/
+EIFGENs/hello_world/W_code/</code></pre>
+<p>The <em>.e files are your source code files.
+The </em>.ecf files contains metadata about your project, like name of primary cluster, and type of&nbsp;application</p>
+<p>Everything in the EIFGENs directory is created by EiffelStudio, and will be regenerated when required, based on our .e&nbsp;files. </p>
+<p>So we should exclude everything in EIFGENs from source control, except the Diagrams subdirectory, since that is where our user-created diagrams&nbsp;live.</p>
+<p>Example .gitignore&nbsp;file:</p>
+<pre><code>*.log
+
+#Ignore everything in EIFGENs, except the Diagrams subdirectory
+EIFGENs/**/*
+!EIFGENs/*/Diagrams/</code></pre>
+</section>
+        </article>
+      </div>
+    </div>
+    <footer>
+      <div class="content-wrap">
+        <div class="nav"><a href="/">« Back</a></div>
+        <section class="about">
+        </section>
+        <section class="copy">
+          <p>&copy; 2013 Martin Faartoft &mdash; powered by&nbsp;<a href="https://github.com/jnordberg/wintersmith">Wintersmith</a>
+          </p>
+        </section>
+      </div>
+    </footer>
+  </body>
+</html>

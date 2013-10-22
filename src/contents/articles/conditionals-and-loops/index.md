@@ -1,7 +1,7 @@
 ---
 title: Conditionals and Loops
 author: martin-faartoft
-date: 2013-10-22
+date: 2013-10-21
 template: article.jade
 ---
 
