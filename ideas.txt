@@ -5,4 +5,3 @@ Command/Query separation
 Design by Contract
 Agents
 Frozen
-Delete Eiffel Stuff
