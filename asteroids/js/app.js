@@ -51,20 +51,20 @@ var player = {
         var d_x = Math.cos(this.heading);
         var d_y = Math.sin(this.heading);
         
-        this.speed[0] += d_x * this.acceleration * dt;
+        this.speed[0] -= d_x * this.acceleration * dt;
         this.speed[1] -= d_y * this.acceleration * dt;
     },
     
     gunPosition: function() {
-        var x = this.pos[0] + (Math.cos(this.heading) * 2 * this.scale);
-        var y = this.pos[1] - (Math.sin(this.heading) * 2 * this.scale);
+        var x = this.pos[0] - Math.cos(this.heading) * 2 * this.scale;
+        var y = this.pos[1] - Math.sin(this.heading) * 2 * this.scale;
         return [x,y];
     },
     
     fire: function(dt) {
         if(lastFire < Date.now() - 100) {
             var gunPos = this.gunPosition();
-            var speed_x = this.speed[0] + Math.cos(this.heading) * 8;
+            var speed_x = this.speed[0] - Math.cos(this.heading) * 8;
             var speed_y = this.speed[1] - Math.sin(this.heading) * 8;
             bullets.push({
                     pos: [gunPos[0], gunPos[1]],
@@ -129,7 +129,10 @@ function render() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     renderMeteors();
-    renderPlayer();
+    renderPlayer(player.pos[0], player.pos[1], player);
+    var playerOverlaps = calculateOverlaps(player);
+    renderWrappedPlayers(player, playerOverlaps);
+    
     renderBullets();
     
     if(debug) {
@@ -154,12 +157,60 @@ function renderGameOver() {
 function renderMeteors() {
     for (var i = 0; i < meteors.length; i++) {
         var m = meteors[i];
-        ctx.fillStyle = 'orange';
+        renderMeteor(m.pos[0], m.pos[1], m.radius);
+        
+        var overlaps = calculateOverlaps(m);
+        renderWrappedMeteors(m, overlaps);
+    }
+}
+
+
+
+function calculateOverlaps(entity) {
+    return [
+        entity.radius - entity.pos[1],
+        entity.pos[0] + entity.radius - canvas.width,
+        entity.pos[1] + entity.radius - canvas.height,
+        entity.radius - entity.pos[0]
+    ];
+}
+
+function renderWrappedPlayers(p, overlaps) {
+    if(overlaps[0] > 0) { //top
+        renderPlayer(p.pos[0], canvas.height + p.radius - overlaps[0], p);
+    }
+    if(overlaps[1] > 0) { //right
+        renderPlayer(overlaps[1] - p.radius, p.pos[1], p);
+    }
+    if(overlaps[2] > 0) { //bottom
+        renderPlayer(p.pos[0], overlaps[2] - p.radius, p);
+    }
+    if(overlaps[3] > 0) { //left
+        renderPlayer(canvas.width + p.radius - overlaps[3], p.pos[1], p);
+    }
+}
+
+function renderWrappedMeteors(m, overlaps) {
+    if(overlaps[0] > 0) { //top
+        renderMeteor(m.pos[0], canvas.height + m.radius - overlaps[0], m.radius);
+    }
+    if(overlaps[1] > 0) { //right
+        renderMeteor(overlaps[1] - m.radius, m.pos[1], m.radius);
+    }
+    if(overlaps[2] > 0) { //bottom
+        renderMeteor(m.pos[0], overlaps[2] - m.radius, m.radius);
+    }
+    if(overlaps[3] > 0) { //left
+        renderMeteor(canvas.width + m.radius - overlaps[3], m.pos[1], m.radius);
+    }
+}
+
+function renderMeteor(x, y, r) {
+    ctx.fillStyle = 'orange';
         ctx.beginPath();
-        ctx.arc(m.pos[0], m.pos[1], m.radius, 0, two_pi, true);
+        ctx.arc(x, y, r, 0, two_pi, true);
         ctx.closePath();
         ctx.fill();
-    }
 }
 
 function renderBullets() {
@@ -173,20 +224,20 @@ function renderBullets() {
     }
 }
 
-function renderPlayer() {
+function renderPlayer(x, y, player) {
     var scale = player.scale;
     
     ctx.save();
-    ctx.translate(player.pos[0], player.pos[1]);
+    ctx.translate(x, y);
     ctx.rotate(player.heading);
     ctx.fillStyle = 'red';
     ctx.beginPath();
-    ctx.moveTo(0, -2 * scale);
+    ctx.moveTo(-2 * scale, 0);
     ctx.lineTo(2 * scale, 2 * scale);
-    ctx.lineTo(0, scale);
-    ctx.lineTo(-2 * scale, 2 *scale);
+    ctx.lineTo(scale, 0);
+    ctx.lineTo(2 * scale, -2 * scale);
     ctx.fill();
-    ctx.translate(-player.pos[0], -player.pos[1]);
+    ctx.translate(x, y);
     ctx.restore();
 }
 
