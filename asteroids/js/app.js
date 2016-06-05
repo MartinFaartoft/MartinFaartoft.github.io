@@ -330,7 +330,7 @@ function init() {
         pos: [canvas.width / 10, canvas.height / 5],
         speed: [2, -.5],
         size: 3,
-        radius: 30 * 3 //size
+        radius: 30 * 3
     });
     
     meteors.push({
@@ -338,7 +338,7 @@ function init() {
         pos: [canvas.width * 7 / 10, canvas.height * 4 / 5],
         speed: [-1, 1],
         size: 3,
-        radius: 30 * 3 //size
+        radius: 30 * 3
     });
 }
 
