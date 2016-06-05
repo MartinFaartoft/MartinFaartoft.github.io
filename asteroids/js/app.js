@@ -43,29 +43,29 @@ var player = {
     pos: [canvas.width / 2.0 , canvas.height / 2.0],
     speed: [0, 0],
     acceleration: 15,
-    heading: 0, //direction the nose is pointing
+    heading: Math.PI / 2.0, //direction the nose is pointing
     scale: 15.0,
     radius: 30, // 2 * scale
     rotation_speed: 150 * Math.PI / 180.0, //radians per seconds
     burn: function(dt) {
-        var d_x = Math.sin(this.heading);
-        var d_y = Math.cos(this.heading);
+        var d_x = Math.cos(this.heading);
+        var d_y = Math.sin(this.heading);
         
         this.speed[0] += d_x * this.acceleration * dt;
         this.speed[1] -= d_y * this.acceleration * dt;
     },
     
     gunPosition: function() {
-        var x = this.pos[0] + (Math.sin(this.heading) * 2 * this.scale);
-        var y = this.pos[1] - (Math.cos(this.heading) * 2 * this.scale);
+        var x = this.pos[0] + (Math.cos(this.heading) * 2 * this.scale);
+        var y = this.pos[1] - (Math.sin(this.heading) * 2 * this.scale);
         return [x,y];
     },
     
     fire: function(dt) {
         if(lastFire < Date.now() - 100) {
             var gunPos = this.gunPosition();
-            var speed_x = this.speed[0] + Math.sin(this.heading) * 8;
-            var speed_y = this.speed[1] - Math.cos(this.heading) * 8;
+            var speed_x = this.speed[0] + Math.cos(this.heading) * 8;
+            var speed_y = this.speed[1] - Math.sin(this.heading) * 8;
             bullets.push({
                     pos: [gunPos[0], gunPos[1]],
                     radius: 5,
@@ -78,9 +78,11 @@ var player = {
     
     rotateClockWise: function(dt) {
         this.heading += this.rotation_speed * dt;
+        this.heading = this.heading % two_pi;
     },
     rotateCounterClockWise: function(dt) {
         this.heading -= this.rotation_speed * dt
+        this.heading = this.heading % two_pi;
     }
     
 };
