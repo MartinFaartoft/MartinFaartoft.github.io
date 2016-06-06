@@ -129,9 +129,7 @@ function render() {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     renderMeteors();
-    renderPlayer(player.pos[0], player.pos[1], player);
-    var playerOverlaps = calculateOverlaps(player);
-    renderWrappedPlayers(player, playerOverlaps);
+    renderWrappedPlayers(player);
     
     renderBullets();
     
@@ -155,53 +153,45 @@ function renderGameOver() {
 }
 
 function renderMeteors() {
-    for (var i = 0; i < meteors.length; i++) {
-        var m = meteors[i];
-        renderMeteor(m.pos[0], m.pos[1], m.radius);
-        
-        var overlaps = calculateOverlaps(m);
-        renderWrappedMeteors(m, overlaps);
+    for (var i = 0; i < meteors.length; i++) {       
+        renderWrappedMeteors(meteors[i]);
     }
 }
 
-
-
-function calculateOverlaps(entity) {
-    return [
-        entity.radius - entity.pos[1],
-        entity.pos[0] + entity.radius - canvas.width,
-        entity.pos[1] + entity.radius - canvas.height,
-        entity.radius - entity.pos[0]
-    ];
+function getWrappedEntityBoundingCircles(entity) {
+    var boundingCircles = [entity];
+    for(var i = -1; i <= 1; i++) {
+        for(var j = -1; j <= 1; j++) {
+            boundingCircles.push({
+                pos: [entity.pos[0] + i * canvas.width, entity.pos[1] + j * canvas.height], 
+                radius: entity.radius
+            });
+        }
+    }    
+    return boundingCircles;
 }
 
-function renderWrappedPlayers(p, overlaps) {
-    if(overlaps[0] > 0) { //top
-        renderPlayer(p.pos[0], canvas.height + p.radius - overlaps[0], p);
-    }
-    if(overlaps[1] > 0) { //right
-        renderPlayer(overlaps[1] - p.radius, p.pos[1], p);
-    }
-    if(overlaps[2] > 0) { //bottom
-        renderPlayer(p.pos[0], overlaps[2] - p.radius, p);
-    }
-    if(overlaps[3] > 0) { //left
-        renderPlayer(canvas.width + p.radius - overlaps[3], p.pos[1], p);
+/**
+ * render the actual player along with the 8 wrapped ones
+ * can be optimized by inspecting actual coords and only rendering partially visible ones
+ */
+function renderWrappedPlayers(p) {
+    for(var i = -1; i <= 1; i++) {
+        for(var j = -1; j <= 1; j++) {
+            renderPlayer(p.pos[0] + i * canvas.width, p.pos[1] + j * canvas.height, p);
+        }
     }
 }
 
-function renderWrappedMeteors(m, overlaps) {
-    if(overlaps[0] > 0) { //top
-        renderMeteor(m.pos[0], canvas.height + m.radius - overlaps[0], m.radius);
-    }
-    if(overlaps[1] > 0) { //right
-        renderMeteor(overlaps[1] - m.radius, m.pos[1], m.radius);
-    }
-    if(overlaps[2] > 0) { //bottom
-        renderMeteor(m.pos[0], overlaps[2] - m.radius, m.radius);
-    }
-    if(overlaps[3] > 0) { //left
-        renderMeteor(canvas.width + m.radius - overlaps[3], m.pos[1], m.radius);
+/**
+ * render the actual meteor along with the 8 wrapped ones
+ * can be optimized by inspecting actual coords and only rendering partially visible ones
+ */
+function renderWrappedMeteors(m) { 
+    for(var i = -1; i <= 1; i++) {
+        for(var j = -1; j <= 1; j++) {
+            renderMeteor(m.pos[0] + i * canvas.width, m.pos[1] + j * canvas.height, m.radius);
+        }
     }
 }
 
@@ -325,7 +315,7 @@ function detectCollisions() {
     //bullet meteor collision
     for(var i = 0; i < bullets.length; i++) {
         for(var j = 0; j < meteors.length; j++) {
-            if(detectCollision(bullets[i], meteors[j])) {
+            if(detectCollisionWithWrapping(bullets[i], meteors[j])) {
                 bullets[i].exploded = true;
                 meteors[j].exploded = true;
             }
@@ -334,7 +324,7 @@ function detectCollisions() {
     
     //player meteor collision
     forEachMeteor(function(meteor) {
-        if(detectCollision(meteor, player)) {
+        if(detectCollisionWithWrapping(meteor, player)) {
             gameOver();
         }
     });
@@ -344,6 +334,17 @@ function forEachMeteor(fun) {
     for(var i = 0; i < meteors.length; i++) {
         fun(meteors[i])
     }
+}
+
+function detectCollisionWithWrapping(a, b) {
+    var wrappedEntities = getWrappedEntityBoundingCircles(b);
+    for(var i = 0; i < wrappedEntities.length; i++) {
+        if(detectCollision(a, wrappedEntities[i])) {
+            return true;
+        }
+    }
+    
+    return false;
 }
 
 function detectCollision(a, b) {
@@ -375,7 +376,7 @@ function explodeMeteor(meteor) {
     }
 }
 
-function init() {
+ function init() {
     meteors.push({
         exploded: false,
         pos: [canvas.width / 10, canvas.height / 5],
@@ -388,6 +389,14 @@ function init() {
         exploded: false,
         pos: [canvas.width * 7 / 10, canvas.height * 4 / 5],
         speed: [-1, 1],
+        size: 3,
+        radius: 30 * 3
+    });
+    
+    meteors.push({
+        exploded: false,
+        pos: [10, 10],
+        speed: [0, 0],
         size: 3,
         radius: 30 * 3
     });
