@@ -1,3 +1,6 @@
+var Meteor = Entities.Meteor;
+var Bullet = Entities.Bullet;
+var Spaceship = Entities.Spaceship;
 // A cross-browser requestAnimationFrame
 // See https://hacks.mozilla.org/2011/08/animating-with-javascript-from-setinterval-to-requestanimationframe/
 var requestAnimationFrameShim = (function () {
@@ -34,49 +37,8 @@ function main() {
     }
 }
 //Game state
-var player = {
-    pos: [canvas.width / 2.0, canvas.height / 2.0],
-    speed: [0, 0],
-    acceleration: 15,
-    heading: Math.PI / 2.0,
-    scale: 15.0,
-    radius: 30,
-    rotation_speed: 150 * Math.PI / 180.0,
-    burn: function (dt) {
-        var d_x = Math.cos(this.heading);
-        var d_y = Math.sin(this.heading);
-        this.speed[0] -= d_x * this.acceleration * dt;
-        this.speed[1] -= d_y * this.acceleration * dt;
-    },
-    gunPosition: function () {
-        var x = this.pos[0] - Math.cos(this.heading) * 2 * this.scale;
-        var y = this.pos[1] - Math.sin(this.heading) * 2 * this.scale;
-        return [x, y];
-    },
-    fire: function () {
-        if (lastFire < Date.now() - 100) {
-            var gunPos = this.gunPosition();
-            var speed_x = this.speed[0] - Math.cos(this.heading) * 8;
-            var speed_y = this.speed[1] - Math.sin(this.heading) * 8;
-            bullets.push({
-                pos: [gunPos[0], gunPos[1]],
-                radius: 5,
-                speed: [speed_x, speed_y],
-                endTime: Date.now() + 1000
-            });
-            lastFire = Date.now();
-        }
-    },
-    rotateClockWise: function (dt) {
-        this.heading += this.rotation_speed * dt;
-        this.heading = this.heading % two_pi;
-    },
-    rotateCounterClockWise: function (dt) {
-        this.heading -= this.rotation_speed * dt;
-        this.heading = this.heading % two_pi;
-    }
-};
-var debug = false;
+var player = new Spaceship([canvas.width / 2.0, canvas.height / 2.0]);
+var debug = true;
 var bullets = [];
 var meteors = [];
 var lastFire = Date.now();
@@ -104,7 +66,10 @@ function handleInput(dt) {
         player.rotateClockWise(dt);
     }
     if (Input.isDown('SPACE')) {
-        player.fire();
+        if (player.canFire()) {
+            var bullet = player.fire();
+            bullets.push(bullet);
+        }
     }
 }
 function render() {
@@ -114,7 +79,7 @@ function render() {
     renderWrappedPlayers(player);
     renderBullets();
     if (debug) {
-        ctx.fillStyle = 'black';
+        ctx.fillStyle = 'white';
         ctx.fillRect(player.pos[0], player.pos[1], 3, 3);
         var gunPosition = player.gunPosition();
         ctx.fillRect(gunPosition[0], gunPosition[1], 3, 3);
@@ -185,7 +150,7 @@ function renderBullets() {
     }
 }
 function renderPlayer(x, y, player) {
-    var scale = player.scale;
+    var scale = Spaceship.SCALE;
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(player.heading);
@@ -200,16 +165,12 @@ function renderPlayer(x, y, player) {
     ctx.restore();
 }
 function updateEntities(dt) {
-    player.pos[0] += player.speed[0];
-    player.pos[1] += player.speed[1];
+    player.advance(dt);
     for (var i = 0; i < bullets.length; i++) {
-        var bullet = bullets[i];
-        bullet.pos[0] += bullet.speed[0];
-        bullet.pos[1] += bullet.speed[1];
+        bullets[i].advance(dt);
     }
     for (var i = 0; i < meteors.length; i++) {
-        var meteor = meteors[i];
-        meteor.advance(dt);
+        meteors[i].advance(dt);
     }
     wrapEntities();
 }
@@ -258,7 +219,6 @@ function removeMeteors() {
     for (var i = 0; i < meteors.length; i++) {
         var meteor = meteors[i];
         if (meteor.exploded) {
-            console.log(meteor);
             for (var _i = 0, _a = meteor.explode(); _i < _a.length; _i++) {
                 var m = _a[_i];
                 newMeteors.push(m);
