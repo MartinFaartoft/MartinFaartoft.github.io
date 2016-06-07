@@ -47,8 +47,8 @@ function main() {
 //Game state
 var player = new Spaceship([canvas.width / 2.0, canvas.height / 2.0]);
 
-var debug = true;
-var bullets = [];
+var debug = false;
+var bullets: Bullet[] = [];
 var meteors: Meteor[] = [];
 
 var lastFire = Date.now();
@@ -198,51 +198,17 @@ function renderPlayer(x, y, player) {
     ctx.restore();
 }
 
-function updateEntities(dt) {
-    player.advance(dt);
+function updateEntities(dt) {    
+    player.update(dt);
 
-    for (var i = 0; i < bullets.length; i++) {
-        bullets[i].advance(dt);
+    for (var m of meteors) {
+        m.update(dt);
     }
-    
-    for (var i = 0; i < meteors.length; i++) {
-        meteors[i].advance(dt);
-    }
-    
-    wrapEntities();
-}
 
-function wrapEntities() {
-    wrapEntity(player);
-    for (var i = 0; i < bullets.length; i++) {
-        wrapEntity(bullets[i]);
+    for (var b of bullets) {
+        b.update(dt);
     }
-    
-    for (var i = 0; i < meteors.length; i++) {
-        wrapEntity(meteors[i]);
-    }
-}
 
-function wrapEntity(entity) {
-    //exit right edge
-    if(entity.pos[0] > canvas.width) {
-        entity.pos[0] = 0;
-    }
-    
-    //exit left edge
-    if(entity.pos[0] < 0) {
-        entity.pos[0] = canvas.width;
-    }
-    
-    //exit top
-    if(entity.pos[1] < 0) {
-        entity.pos[1] = canvas.height;
-    }
-    
-    //exit bottom
-    if(entity.pos[1] > canvas.height) {
-        entity.pos[1] = 0;
-    }
 }
 
 function gameOver() {
@@ -290,17 +256,11 @@ function detectCollisions() {
     }
     
     //player meteor collision
-    forEachMeteor(function(meteor) {
+    for (var meteor of meteors) {
         if(detectCollisionWithWrapping(meteor, player)) {
-            gameOver();
+            //gameOver();
         }
-    });
-}
-
-function forEachMeteor(fun) {
-    for(var i = 0; i < meteors.length; i++) {
-        fun(meteors[i])
-    }
+    };
 }
 
 function detectCollisionWithWrapping(a, b) {

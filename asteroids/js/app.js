@@ -38,7 +38,7 @@ function main() {
 }
 //Game state
 var player = new Spaceship([canvas.width / 2.0, canvas.height / 2.0]);
-var debug = true;
+var debug = false;
 var bullets = [];
 var meteors = [];
 var lastFire = Date.now();
@@ -165,40 +165,14 @@ function renderPlayer(x, y, player) {
     ctx.restore();
 }
 function updateEntities(dt) {
-    player.advance(dt);
-    for (var i = 0; i < bullets.length; i++) {
-        bullets[i].advance(dt);
+    player.update(dt);
+    for (var _i = 0, meteors_1 = meteors; _i < meteors_1.length; _i++) {
+        var m = meteors_1[_i];
+        m.update(dt);
     }
-    for (var i = 0; i < meteors.length; i++) {
-        meteors[i].advance(dt);
-    }
-    wrapEntities();
-}
-function wrapEntities() {
-    wrapEntity(player);
-    for (var i = 0; i < bullets.length; i++) {
-        wrapEntity(bullets[i]);
-    }
-    for (var i = 0; i < meteors.length; i++) {
-        wrapEntity(meteors[i]);
-    }
-}
-function wrapEntity(entity) {
-    //exit right edge
-    if (entity.pos[0] > canvas.width) {
-        entity.pos[0] = 0;
-    }
-    //exit left edge
-    if (entity.pos[0] < 0) {
-        entity.pos[0] = canvas.width;
-    }
-    //exit top
-    if (entity.pos[1] < 0) {
-        entity.pos[1] = canvas.height;
-    }
-    //exit bottom
-    if (entity.pos[1] > canvas.height) {
-        entity.pos[1] = 0;
+    for (var _a = 0, bullets_1 = bullets; _a < bullets_1.length; _a++) {
+        var b = bullets_1[_a];
+        b.update(dt);
     }
 }
 function gameOver() {
@@ -240,16 +214,12 @@ function detectCollisions() {
         }
     }
     //player meteor collision
-    forEachMeteor(function (meteor) {
+    for (var _i = 0, meteors_2 = meteors; _i < meteors_2.length; _i++) {
+        var meteor = meteors_2[_i];
         if (detectCollisionWithWrapping(meteor, player)) {
-            gameOver();
         }
-    });
-}
-function forEachMeteor(fun) {
-    for (var i = 0; i < meteors.length; i++) {
-        fun(meteors[i]);
     }
+    ;
 }
 function detectCollisionWithWrapping(a, b) {
     var wrappedEntities = getWrappedEntityBoundingCircles(b);

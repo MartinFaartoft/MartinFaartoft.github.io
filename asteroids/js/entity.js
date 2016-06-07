@@ -10,10 +10,30 @@ var Entities;
             this.pos = pos;
             this.speed = speed;
             this.radius = radius;
+            this.exploded = false;
         }
-        Entity.prototype.advance = function (dt) {
+        Entity.prototype.update = function (dt) {
             this.pos[0] += this.speed[0] * dt;
             this.pos[1] += this.speed[1] * dt;
+            this.wrap();
+        };
+        Entity.prototype.wrap = function () {
+            //exit right edge
+            if (this.pos[0] > canvas.width) {
+                this.pos[0] = 0;
+            }
+            //exit left edge
+            if (this.pos[0] < 0) {
+                this.pos[0] = canvas.width;
+            }
+            //exit top
+            if (this.pos[1] < 0) {
+                this.pos[1] = canvas.height;
+            }
+            //exit bottom
+            if (this.pos[1] > canvas.height) {
+                this.pos[1] = 0;
+            }
         };
         return Entity;
     }());
@@ -23,7 +43,6 @@ var Entities;
         function Meteor(pos, speed, size) {
             _super.call(this, pos, speed, size * Meteor.SCALING_FACTOR);
             this.size = size;
-            this.exploded = false;
         }
         Meteor.prototype.explode = function () {
             if (this.size === 1) {

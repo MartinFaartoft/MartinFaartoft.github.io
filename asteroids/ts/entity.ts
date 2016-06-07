@@ -1,12 +1,38 @@
 namespace Entities {
     export class Entity {
+        exploded: boolean = false;
+
         constructor(public pos: number[], public speed: number[], public radius: number) {
             
         }
 
-        advance(dt: number): void {
+        update(dt: number): void {
             this.pos[0] += this.speed[0] * dt;
             this.pos[1] += this.speed[1] * dt;
+
+            this.wrap();            
+        }
+
+        wrap() {
+            //exit right edge
+            if(this.pos[0] > canvas.width) {
+                this.pos[0] = 0;
+            }
+            
+            //exit left edge
+            if(this.pos[0] < 0) {
+                this.pos[0] = canvas.width;
+            }
+            
+            //exit top
+            if(this.pos[1] < 0) {
+                this.pos[1] = canvas.height;
+            }
+            
+            //exit bottom
+            if(this.pos[1] > canvas.height) {
+                this.pos[1] = 0;
+            }
         }
     }
 
@@ -14,8 +40,6 @@ namespace Entities {
         public static SCALING_FACTOR: number = 30;
         public static SPLIT_FACTOR: number = 3;
         public static POST_EXPLOSION_MAX_SPEED: number = 200;
-
-        exploded: boolean = false;
         
         constructor(pos: number[], speed: number[], public size: number) {
             super(pos, speed, size * Meteor.SCALING_FACTOR);
@@ -103,7 +127,5 @@ namespace Entities {
             this.heading -= this.rotation_speed * dt
             this.heading = this.heading % (Math.PI * 2);
         }
-
-
     }
 }
