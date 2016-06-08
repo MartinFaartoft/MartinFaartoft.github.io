@@ -1,21 +1,10 @@
 "use strict";
 
-import Meteor = Entities.Meteor;
-import Bullet = Entities.Bullet;
-import Spaceship = Entities.Spaceship;
-
-// A cross-browser requestAnimationFrame
-// See https://hacks.mozilla.org/2011/08/animating-with-javascript-from-setinterval-to-requestanimationframe/
-var requestAnimationFrameShim = (function(){
-    return window.requestAnimationFrame       ||
-        (<any>window).webkitRequestAnimationFrame ||
-        (<any>window).mozRequestAnimationFrame    ||
-        (<any>window).oRequestAnimationFrame      ||
-        (<any>window).msRequestAnimationFrame     ||
-        function(callback){
-            window.setTimeout(callback, 1000 / 60);
-        };
-})();
+import Meteor = Asteroids.Entities.Meteor;
+import Bullet = Asteroids.Entities.Bullet;
+import Spaceship = Asteroids.Entities.Spaceship;
+import GameState = Asteroids.GameState;
+import Engine = Asteroids.Engine;
 
 //create canvas
 var canvas = document.createElement("canvas");
@@ -24,109 +13,11 @@ canvas.width = window.innerWidth - 20;
 canvas.height = window.innerHeight - 50;
 document.body.appendChild(canvas);
 
-var lastTime = Date.now();
 var two_pi = Math.PI * 2;
-var frameNumber = 0;
 
-function main() {
-    var now = Date.now();
-    var dt = (now - lastTime) / 1000.0;
-    
-    if(!isGameOver) {
-        update(dt);
-        render();
-        
-        lastTime = now;
-        frameNumber++;
-    
-        requestAnimationFrameShim(main);
-    }
-    else {
-        renderGameOver();
-    }
-}
-
-//Game state
-var player = new Spaceship([canvas.width / 2.0, canvas.height / 2.0]);
-
-var debug = false;
-var bullets: Bullet[] = [];
-var meteors: Meteor[] = [];
-
-var lastFire = Date.now();
-var isGameOver = false;
-
-//update
-function update(dt) {
-    handleInput(dt);
-    
-    updateEntities(dt);
-    
-    detectCollisions();
-
-    garbageCollect();
-};
-
-//input
-function handleInput(dt) {
-    if(Input.isDown('UP')) {
-        player.burn(dt);
-    }
-    
-    if(Input.isDown('LEFT')) {
-        player.rotateCounterClockWise(dt);
-    }
-    
-    if(Input.isDown('RIGHT')) {
-        player.rotateClockWise(dt);
-    }
-    
-    if(Input.isDown('SPACE')) {
-        if(player.canFire()) {
-            var bullet = player.fire();
-            bullets.push(bullet);
-        }
-    }
-}
-
-function render() {
-    ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    renderMeteors();
-    renderWrappedPlayers(player);
-    
-    renderBullets();
-    
-    if(debug) {
-        ctx.fillStyle ='white';
-        ctx.fillRect(player.pos[0], player.pos[1], 3, 3);
-    
-        var gunPosition = player.gunPosition();
-        ctx.fillRect(gunPosition[0], gunPosition[1], 3, 3);
-        
-        ctx.fillText("heading:" + player.heading, 10, 10);
-    }
-}
-
-function renderGameOver() {
-    ctx.fillStyle = 'black';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'red';
-    ctx.font = "80px comic sans";
-    ctx.fillText("GAME OVER", canvas.height / 2.0, canvas.width / 2.0);
-}
-
-function renderMeteors() {
-    for (var i = 0; i < meteors.length; i++) {       
-        renderWrappedMeteors(meteors[i]);
-    }
-}
-
-function garbageCollect() {
-    bullets = bullets.filter(b => !b.destroyed);
-    meteors = meteors.filter(m => !m.destroyed);
-}
+let dimensions = [canvas.width, canvas.height];
+var state: GameState = new GameState(dimensions);
+var engine: Engine = new Engine(state, ctx);
 
 function getWrappedEntityBoundingCircles(entity) {
     var boundingCircles = [entity];
@@ -141,107 +32,29 @@ function getWrappedEntityBoundingCircles(entity) {
     return boundingCircles;
 }
 
-/**
- * render the actual player along with the 8 wrapped ones
- * can be optimized by inspecting actual coords and only rendering partially visible ones
- */
-function renderWrappedPlayers(p) {
-    for(var i = -1; i <= 1; i++) {
-        for(var j = -1; j <= 1; j++) {
-            renderPlayer(p.pos[0] + i * canvas.width, p.pos[1] + j * canvas.height, p);
-        }
-    }
-}
-
-/**
- * render the actual meteor along with the 8 wrapped ones
- * can be optimized by inspecting actual coords and only rendering partially visible ones
- */
-function renderWrappedMeteors(m) { 
-    for(var i = -1; i <= 1; i++) {
-        for(var j = -1; j <= 1; j++) {
-            renderMeteor(m.pos[0] + i * canvas.width, m.pos[1] + j * canvas.height, m.radius);
-        }
-    }
-}
-
-function renderMeteor(x, y, r) {
-    ctx.fillStyle = 'grey';
-        ctx.beginPath();
-        ctx.arc(x, y, r, 0, two_pi, true);
-        ctx.closePath();
-        ctx.fill();
-}
-
-function renderBullets() {
-    for (var i = 0; i < bullets.length; i++) {
-        var b = bullets[i];
-        ctx.fillStyle = 'green';
-        ctx.beginPath();
-        ctx.arc(b.pos[0], b.pos[1], b.radius, 0, two_pi, true);
-        ctx.closePath();
-        ctx.fill();
-    }
-}
-
-function renderPlayer(x, y, player) {
-    var scale = Spaceship.SCALE;
-    
-    ctx.save();
-    ctx.translate(x, y);
-    ctx.rotate(player.heading);
-    ctx.fillStyle = 'red';
-    ctx.beginPath();
-    ctx.moveTo(-2 * scale, 0);
-    ctx.lineTo(2 * scale, 2 * scale);
-    ctx.lineTo(scale, 0);
-    ctx.lineTo(2 * scale, -2 * scale);
-    ctx.fill();
-    ctx.translate(x, y);
-    ctx.restore();
-}
-
-function updateEntities(dt) {
-    applyToEntities(e => e.update(dt));
-}
-
-function applyToEntities(action: (Entity) => void) {
-    action(player);
-
-    for (var m of meteors) {
-        action(m);
-    }
-
-    for (var b of bullets) {
-        action(b);
-    }
-}
-
-function gameOver() {
-    isGameOver = true;
-}
-
 function detectCollisions() {
     //bullet meteor collision
     let newMeteors: Meteor[] = [];
 
-    for(var i = 0; i < bullets.length; i++) {
-        for(var j = 0; j < meteors.length; j++) {
-            if(detectCollisionWithWrapping(bullets[i], meteors[j])) {
-                bullets[i].destroyed = true;
-                meteors[j].destroyed = true;
+    for(var i = 0; i < state.bullets.length; i++) {
+        for(var j = 0; j < state.meteors.length; j++) {
+            if(detectCollisionWithWrapping(state.bullets[i], state.meteors[j])) {
+                state.bullets[i].destroyed = true;
+                state.meteors[j].destroyed = true;
                 
-                newMeteors = newMeteors.concat(meteors[j].explode());
+                newMeteors = newMeteors.concat(state.meteors[j].explode());
             }
         }
     }
 
-    meteors = meteors.concat(newMeteors);
+    state.meteors = state.meteors.concat(newMeteors);
     
     //player meteor collision
-    for (var meteor of meteors) {
-        if(detectCollisionWithWrapping(meteor, player)) {
-            //gameOver();
+    for (var meteor of state.meteors) {
+        if(detectCollisionWithWrapping(meteor, state.spaceship)) {
+            if(!engine.debug) {
+                state.isGameOver = true;
+            }
         }
     };
 }
@@ -267,12 +80,10 @@ function detectCollision(a, b) {
 }
 
  function init() {
-    meteors.push(new Meteor([canvas.width / 10, canvas.height / 5], [100, -50], 3));
-
-    meteors.push(new Meteor([canvas.width * 7 / 10, canvas.height * 4 / 5], [-100, 100], 3));
-
-    meteors.push(new Meteor([10, 10], [0, 0], 3));
+    state.meteors.push(new Meteor([canvas.width / 10, canvas.height / 5], [100, -50], 3));
+    state.meteors.push(new Meteor([canvas.width * 7 / 10, canvas.height * 4 / 5], [-100, 100], 3));
+    state.meteors.push(new Meteor([10, 10], [0, 0], 3));
 }
 
 init();
-requestAnimationFrameShim(main);
+engine.run();

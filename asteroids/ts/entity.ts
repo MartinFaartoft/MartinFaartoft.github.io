@@ -1,5 +1,7 @@
-namespace Entities {
-    export class Entity {
+"use strict";
+
+namespace Asteroids.Entities {
+    export abstract class Entity {
         destroyed: boolean = false;
 
         constructor(public pos: number[], public speed: number[], public radius: number) {
@@ -34,6 +36,8 @@ namespace Entities {
                 this.pos[1] = 0;
             }
         }
+
+        abstract render(ctx: CanvasRenderingContext2D, dimensions: number[]);
     }
 
     export class Meteor extends Entity {
@@ -64,6 +68,22 @@ namespace Entities {
             
             return meteors;
         }
+
+        render(ctx: CanvasRenderingContext2D) {
+            for(var i = -1; i <= 1; i++) {
+               for(var j = -1; j <= 1; j++) {
+                    this.renderInternal(ctx, this.pos[0] + i * dimensions[0], this.pos[1] + j * dimensions[1], this.radius);
+                }
+            }
+        }
+
+        private renderInternal(ctx: CanvasRenderingContext2D, x: number, y: number, radius: number) {
+            ctx.fillStyle = 'grey';
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, two_pi, true);
+            ctx.closePath();
+            ctx.fill();
+        }
     }
 
     export class Bullet extends Entity {
@@ -78,6 +98,14 @@ namespace Entities {
             if(this.endTime < Date.now()) {
                 this.destroyed = true;
             }
+        }
+
+        render(ctx: CanvasRenderingContext2D) {
+            ctx.fillStyle = 'green';
+            ctx.beginPath();
+            ctx.arc(this.pos[0], this.pos[1], this.radius, 0, two_pi, true);
+            ctx.closePath();
+            ctx.fill();
         }
     }
 
@@ -103,7 +131,7 @@ namespace Entities {
             this.speed[1] -= d_y * this.acceleration * dt;
         }
 
-        gunPosition(): number[] {
+        private gunPosition(): number[] {
             return [this.pos[0] - Math.cos(this.heading) * this.radius,
                     this.pos[1] - Math.sin(this.heading) * this.radius];
         }
@@ -112,17 +140,15 @@ namespace Entities {
             return this.lastFire < Date.now() - Spaceship.SHOT_DELAY;
         }
 
-        fire(): Bullet {
+        fire(state: GameState): void {
             if(this.canFire()) {
                 var gunPos = this.gunPosition();
                 var speed_x = this.speed[0] - Math.cos(this.heading) * 8 * 60;
                 var speed_y = this.speed[1] - Math.sin(this.heading) * 8 * 60;
                 this.lastFire = Date.now();
                 
-                return new Bullet([gunPos[0], gunPos[1]], [speed_x, speed_y], Date.now() + 1000);
+                state.bullets.push(new Bullet([gunPos[0], gunPos[1]], [speed_x, speed_y], Date.now() + 1000));
             }
-
-            Error('asked to shoot before cooldown was over');
         }
     
         rotateClockWise(dt): void {
@@ -133,6 +159,31 @@ namespace Entities {
         rotateCounterClockWise(dt): void {
             this.heading -= this.rotation_speed * dt
             this.heading = this.heading % (Math.PI * 2);
+        }
+
+        render(ctx: CanvasRenderingContext2D, dimensions: number[]) {
+            for(var i = -1; i <= 1; i++) {
+                for(var j = -1; j <= 1; j++) {
+                    this.renderInternal(ctx, this.pos[0] + i * dimensions[0], this.pos[1] + j * dimensions[1], this.heading);
+                }
+            }
+        }
+
+        renderInternal(ctx: CanvasRenderingContext2D, x: number, y: number, heading: number) {        
+            var scale = Spaceship.SCALE;
+            
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(heading);
+            ctx.fillStyle = 'red';
+            ctx.beginPath();
+            ctx.moveTo(-2 * scale, 0);
+            ctx.lineTo(2 * scale, 2 * scale);
+            ctx.lineTo(scale, 0);
+            ctx.lineTo(2 * scale, -2 * scale);
+            ctx.fill();
+            ctx.translate(x, y);
+            ctx.restore();
         }
     }
 }
