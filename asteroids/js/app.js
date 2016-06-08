@@ -4,7 +4,7 @@ var Bullet = Asteroids.Entities.Bullet;
 var Spaceship = Asteroids.Entities.Spaceship;
 var GameState = Asteroids.GameState;
 var Engine = Asteroids.Engine;
-//create canvas
+// create canvas
 var canvas = document.createElement("canvas");
 var ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth - 20;
@@ -27,7 +27,7 @@ function getWrappedEntityBoundingCircles(entity) {
     return boundingCircles;
 }
 function detectCollisions() {
-    //bullet meteor collision
+    // bullet meteor collision
     var newMeteors = [];
     for (var i = 0; i < state.bullets.length; i++) {
         for (var j = 0; j < state.meteors.length; j++) {
@@ -39,7 +39,7 @@ function detectCollisions() {
         }
     }
     state.meteors = state.meteors.concat(newMeteors);
-    //player meteor collision
+    // player meteor collision
     for (var _i = 0, _a = state.meteors; _i < _a.length; _i++) {
         var meteor = _a[_i];
         if (detectCollisionWithWrapping(meteor, state.spaceship)) {
@@ -60,7 +60,7 @@ function detectCollisionWithWrapping(a, b) {
     return false;
 }
 function detectCollision(a, b) {
-    //circle collision
+    // circle collision
     var dx = a.pos[0] - b.pos[0];
     var dy = a.pos[1] - b.pos[1];
     var distance = Math.sqrt(dx * dx + dy * dy);

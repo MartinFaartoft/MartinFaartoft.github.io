@@ -43,21 +43,21 @@ var Asteroids;
             state.applyToEntities(function (e) { return e.update(dt); });
         };
         Engine.prototype.render = function () {
-            ctx.fillStyle = 'black';
+            ctx.fillStyle = "black";
             ctx.fillRect(0, 0, dimensions[0], dimensions[1]);
             state.applyToEntities(function (e) { return e.render(ctx, dimensions); });
             if (this.debug) {
-                ctx.fillStyle = 'white';
+                ctx.fillStyle = "white";
                 ctx.fillRect(state.spaceship.pos[0], state.spaceship.pos[1], 3, 3);
-                //var gunPosition = state.spaceship.gunPosition();
-                //ctx.fillRect(gunPosition[0], gunPosition[1], 3, 3);
+                // var gunPosition = state.spaceship.gunPosition();
+                // ctx.fillRect(gunPosition[0], gunPosition[1], 3, 3);
                 ctx.fillText("heading:" + state.spaceship.heading, 10, 10);
             }
         };
         Engine.prototype.renderGameOver = function () {
-            ctx.fillStyle = 'black';
+            ctx.fillStyle = "black";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = 'red';
+            ctx.fillStyle = "red";
             ctx.font = "80px comic sans";
             ctx.fillText("GAME OVER", canvas.height / 2.0, canvas.width / 2.0);
         };
