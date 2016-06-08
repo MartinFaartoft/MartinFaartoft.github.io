@@ -1,3 +1,4 @@
+"use strict";
 var Meteor = Entities.Meteor;
 var Bullet = Entities.Bullet;
 var Spaceship = Entities.Spaceship;
@@ -42,16 +43,13 @@ var debug = false;
 var bullets = [];
 var meteors = [];
 var lastFire = Date.now();
-var gameTime = 0;
 var isGameOver = false;
 //update
 function update(dt) {
-    gameTime += dt;
     handleInput(dt);
     updateEntities(dt);
     detectCollisions();
-    removeBullets();
-    removeMeteors();
+    garbageCollect();
 }
 ;
 //input
@@ -97,6 +95,10 @@ function renderMeteors() {
     for (var i = 0; i < meteors.length; i++) {
         renderWrappedMeteors(meteors[i]);
     }
+}
+function garbageCollect() {
+    bullets = bullets.filter(function (b) { return !b.destroyed; });
+    meteors = meteors.filter(function (m) { return !m.destroyed; });
 }
 function getWrappedEntityBoundingCircles(entity) {
     var boundingCircles = [entity];
@@ -165,54 +167,35 @@ function renderPlayer(x, y, player) {
     ctx.restore();
 }
 function updateEntities(dt) {
-    player.update(dt);
+    applyToEntities(function (e) { return e.update(dt); });
+}
+function applyToEntities(action) {
+    action(player);
     for (var _i = 0, meteors_1 = meteors; _i < meteors_1.length; _i++) {
         var m = meteors_1[_i];
-        m.update(dt);
+        action(m);
     }
     for (var _a = 0, bullets_1 = bullets; _a < bullets_1.length; _a++) {
         var b = bullets_1[_a];
-        b.update(dt);
+        action(b);
     }
 }
 function gameOver() {
     isGameOver = true;
 }
-function removeBullets() {
-    var now = Date.now();
-    for (var i = 0; i < bullets.length; i++) {
-        var bullet = bullets[i];
-        if (bullet.endTime < now || bullet.exploded) {
-            bullets.splice(i, 1);
-            i--;
-        }
-    }
-}
-function removeMeteors() {
-    var newMeteors = [];
-    for (var i = 0; i < meteors.length; i++) {
-        var meteor = meteors[i];
-        if (meteor.exploded) {
-            for (var _i = 0, _a = meteor.explode(); _i < _a.length; _i++) {
-                var m = _a[_i];
-                newMeteors.push(m);
-            }
-            meteors.splice(i, 1);
-            i--;
-        }
-    }
-    meteors = meteors.concat(newMeteors);
-}
 function detectCollisions() {
     //bullet meteor collision
+    var newMeteors = [];
     for (var i = 0; i < bullets.length; i++) {
         for (var j = 0; j < meteors.length; j++) {
             if (detectCollisionWithWrapping(bullets[i], meteors[j])) {
-                bullets[i].exploded = true;
-                meteors[j].exploded = true;
+                bullets[i].destroyed = true;
+                meteors[j].destroyed = true;
+                newMeteors = newMeteors.concat(meteors[j].explode());
             }
         }
     }
+    meteors = meteors.concat(newMeteors);
     //player meteor collision
     for (var _i = 0, meteors_2 = meteors; _i < meteors_2.length; _i++) {
         var meteor = meteors_2[_i];

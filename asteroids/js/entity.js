@@ -10,7 +10,7 @@ var Entities;
             this.pos = pos;
             this.speed = speed;
             this.radius = radius;
-            this.exploded = false;
+            this.destroyed = false;
         }
         Entity.prototype.update = function (dt) {
             this.pos[0] += this.speed[0] * dt;
@@ -70,6 +70,12 @@ var Entities;
             _super.call(this, pos, speed, Bullet.RADIUS);
             this.endTime = endTime;
         }
+        Bullet.prototype.update = function (dt) {
+            _super.prototype.update.call(this, dt);
+            if (this.endTime < Date.now()) {
+                this.destroyed = true;
+            }
+        };
         Bullet.RADIUS = 5;
         return Bullet;
     }(Entity));

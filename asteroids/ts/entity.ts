@@ -1,6 +1,6 @@
 namespace Entities {
     export class Entity {
-        exploded: boolean = false;
+        destroyed: boolean = false;
 
         constructor(public pos: number[], public speed: number[], public radius: number) {
             
@@ -71,6 +71,13 @@ namespace Entities {
 
         constructor(pos: number[], speed: number[], public endTime: number) {
             super(pos, speed, Bullet.RADIUS);
+        }
+
+        update(dt) {
+            super.update(dt);
+            if(this.endTime < Date.now()) {
+                this.destroyed = true;
+            }
         }
     }
 
