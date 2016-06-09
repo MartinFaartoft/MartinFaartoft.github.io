@@ -12,11 +12,11 @@ namespace Asteroids.Entities {
 
         }
 
-        update(dt: number, dimensions: number[]): void {
+        update(dt: number, state: GameState): void {
             this.pos[0] += this.speed[0] * dt;
             this.pos[1] += this.speed[1] * dt;
 
-            this.wrap(dimensions);
+            this.wrap(state.dimensions);
         }
 
         private wrap(dimensions: number[]) {
@@ -121,8 +121,8 @@ namespace Asteroids.Entities {
             super(pos, speed, Bullet.RADIUS);
         }
 
-        update(dt: number, dimensions: number[]) {
-            super.update(dt, dimensions);
+        update(dt: number, state: GameState) {
+            super.update(dt, state);
             this.age += dt;
             if (this.age > Bullet.LIFESPAN) {
                 this.destroyed = true;
@@ -158,8 +158,8 @@ namespace Asteroids.Entities {
             super(pos, [0, 0], Spaceship.SPRITE_RADIUS * Spaceship.SCALE);
         }
 
-        update(dt: number, dimensions: number[]) {
-            super.update(dt, dimensions);
+        update(dt: number, state: GameState) {
+            super.update(dt, state);
             this.timeSinceLastFiring += dt;
         }
 
@@ -182,7 +182,6 @@ namespace Asteroids.Entities {
 
         fire(state: GameState): void {
             if (this.canFire()) {
-                console.log('fired');
                 let gunPos = this.gunPosition();
                 let speed_x = this.speed[0] - Math.cos(this.heading) * 8 * 60;
                 let speed_y = this.speed[1] - Math.sin(this.heading) * 8 * 60;
@@ -243,7 +242,7 @@ namespace Asteroids.Entities {
             ctx.fillRect(0, 0, state.dimensions[0], state.dimensions[1]);
         }
 
-        update(dt: number, dimensions: number[]) {
+        update() {
             // intentionally left blank
         }
     }
@@ -263,7 +262,7 @@ namespace Asteroids.Entities {
             }
         }
 
-        update(dt: number, dimensions: number[]) {
+        update() {
             // intentionally left blank
         }
     }

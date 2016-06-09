@@ -15,10 +15,10 @@ var Asteroids;
                 this.radius = radius;
                 this.destroyed = false;
             }
-            Entity.prototype.update = function (dt, dimensions) {
+            Entity.prototype.update = function (dt, state) {
                 this.pos[0] += this.speed[0] * dt;
                 this.pos[1] += this.speed[1] * dt;
-                this.wrap(dimensions);
+                this.wrap(state.dimensions);
             };
             Entity.prototype.wrap = function (dimensions) {
                 // exit right edge
@@ -108,8 +108,8 @@ var Asteroids;
                 _super.call(this, pos, speed, Bullet.RADIUS);
                 this.age = 0; // seconds
             }
-            Bullet.prototype.update = function (dt, dimensions) {
-                _super.prototype.update.call(this, dt, dimensions);
+            Bullet.prototype.update = function (dt, state) {
+                _super.prototype.update.call(this, dt, state);
                 this.age += dt;
                 if (this.age > Bullet.LIFESPAN) {
                     this.destroyed = true;
@@ -141,8 +141,8 @@ var Asteroids;
                 this.acceleration = 300;
                 this.timeSinceLastFiring = Spaceship.SHOT_DELAY; // seconds
             }
-            Spaceship.prototype.update = function (dt, dimensions) {
-                _super.prototype.update.call(this, dt, dimensions);
+            Spaceship.prototype.update = function (dt, state) {
+                _super.prototype.update.call(this, dt, state);
                 this.timeSinceLastFiring += dt;
             };
             Spaceship.prototype.burn = function (dt) {
@@ -160,7 +160,6 @@ var Asteroids;
             };
             Spaceship.prototype.fire = function (state) {
                 if (this.canFire()) {
-                    console.log('fired');
                     var gunPos = this.gunPosition();
                     var speed_x = this.speed[0] - Math.cos(this.heading) * 8 * 60;
                     var speed_y = this.speed[1] - Math.sin(this.heading) * 8 * 60;
@@ -218,7 +217,7 @@ var Asteroids;
                 ctx.fillStyle = "black";
                 ctx.fillRect(0, 0, state.dimensions[0], state.dimensions[1]);
             };
-            Background.prototype.update = function (dt, dimensions) {
+            Background.prototype.update = function () {
                 // intentionally left blank
             };
             return Background;
@@ -237,7 +236,7 @@ var Asteroids;
                     ctx.fillText("GAME OVER", (state.dimensions[0] - textWidth) / 2.0, state.dimensions[1] / 2.0);
                 }
             };
-            GameOverScreen.prototype.update = function (dt, dimensions) {
+            GameOverScreen.prototype.update = function () {
                 // intentionally left blank
             };
             return GameOverScreen;
