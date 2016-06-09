@@ -16,10 +16,10 @@ namespace Asteroids.Entities {
             this.pos[0] += this.speed[0] * dt;
             this.pos[1] += this.speed[1] * dt;
 
-            this.wrap();
+            this.wrap(dimensions);
         }
 
-        private wrap() {
+        private wrap(dimensions: number[]) {
             // exit right edge
             if (this.pos[0] > dimensions[0]) {
                 this.pos[0] -= dimensions[0];
@@ -123,7 +123,6 @@ namespace Asteroids.Entities {
 
         update(dt: number, dimensions: number[]) {
             super.update(dt, dimensions);
-            console.log(dt);
             this.age += dt;
             if (this.age > Bullet.LIFESPAN) {
                 this.destroyed = true;
@@ -148,7 +147,7 @@ namespace Asteroids.Entities {
     export class Spaceship extends Entity implements Collidable {
         public static SCALE: number = 15;
         private static SPRITE_RADIUS: number = 2;
-        private static SHOT_DELAY: number = .1; // seconds
+        static SHOT_DELAY: number = .1; // seconds
 
         heading: number = Math.PI / 2.0; // facing north by default
         rotation_speed: number = 150 * Math.PI / 180.0;
@@ -178,11 +177,12 @@ namespace Asteroids.Entities {
         }
 
         private canFire(): boolean {
-            return this.timeSinceLastFiring > Spaceship.SHOT_DELAY;
+            return this.timeSinceLastFiring >= Spaceship.SHOT_DELAY;
         }
 
         fire(state: GameState): void {
             if (this.canFire()) {
+                console.log('fired');
                 let gunPos = this.gunPosition();
                 let speed_x = this.speed[0] - Math.cos(this.heading) * 8 * 60;
                 let speed_y = this.speed[1] - Math.sin(this.heading) * 8 * 60;

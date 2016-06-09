@@ -18,9 +18,9 @@ var Asteroids;
             Entity.prototype.update = function (dt, dimensions) {
                 this.pos[0] += this.speed[0] * dt;
                 this.pos[1] += this.speed[1] * dt;
-                this.wrap();
+                this.wrap(dimensions);
             };
-            Entity.prototype.wrap = function () {
+            Entity.prototype.wrap = function (dimensions) {
                 // exit right edge
                 if (this.pos[0] > dimensions[0]) {
                     this.pos[0] -= dimensions[0];
@@ -110,7 +110,6 @@ var Asteroids;
             }
             Bullet.prototype.update = function (dt, dimensions) {
                 _super.prototype.update.call(this, dt, dimensions);
-                console.log(dt);
                 this.age += dt;
                 if (this.age > Bullet.LIFESPAN) {
                     this.destroyed = true;
@@ -157,10 +156,11 @@ var Asteroids;
                     this.pos[1] - Math.sin(this.heading) * this.radius];
             };
             Spaceship.prototype.canFire = function () {
-                return this.timeSinceLastFiring > Spaceship.SHOT_DELAY;
+                return this.timeSinceLastFiring >= Spaceship.SHOT_DELAY;
             };
             Spaceship.prototype.fire = function (state) {
                 if (this.canFire()) {
+                    console.log('fired');
                     var gunPos = this.gunPosition();
                     var speed_x = this.speed[0] - Math.cos(this.heading) * 8 * 60;
                     var speed_y = this.speed[1] - Math.sin(this.heading) * 8 * 60;
