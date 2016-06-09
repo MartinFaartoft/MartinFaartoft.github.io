@@ -140,10 +140,12 @@ var Asteroids;
                 this.rotation_speed = 150 * Math.PI / 180.0;
                 this.acceleration = 300;
                 this.timeSinceLastFiring = Spaceship.SHOT_DELAY; // seconds
+                this.sprite = new Framework.Sprite([0, 0], [60, 60], [0, 1, 2], 10, "assets/spaceship.png");
             }
             Spaceship.prototype.update = function (dt, state) {
                 _super.prototype.update.call(this, dt, state);
                 this.timeSinceLastFiring += dt;
+                this.sprite.update(dt);
             };
             Spaceship.prototype.burn = function (dt) {
                 var d_x = Math.cos(this.heading);
@@ -192,13 +194,7 @@ var Asteroids;
                 ctx.save();
                 ctx.translate(x, y);
                 ctx.rotate(heading);
-                ctx.fillStyle = "red";
-                ctx.beginPath();
-                ctx.moveTo(-2 * scale, 0);
-                ctx.lineTo(2 * scale, 2 * scale);
-                ctx.lineTo(scale, 0);
-                ctx.lineTo(2 * scale, -2 * scale);
-                ctx.fill();
+                this.sprite.render(ctx, state.resourceManager, [-30, -30]);
                 ctx.translate(x, y);
                 ctx.restore();
             };

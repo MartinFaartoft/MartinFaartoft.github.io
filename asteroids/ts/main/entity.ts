@@ -149,6 +149,8 @@ namespace Asteroids.Entities {
         private static SPRITE_RADIUS: number = 2;
         static SHOT_DELAY: number = .1; // seconds
 
+        private sprite: Framework.Sprite;
+
         heading: number = Math.PI / 2.0; // facing north by default
         rotation_speed: number = 150 * Math.PI / 180.0;
         acceleration: number = 300;
@@ -156,11 +158,14 @@ namespace Asteroids.Entities {
 
         constructor(pos: number[]) {
             super(pos, [0, 0], Spaceship.SPRITE_RADIUS * Spaceship.SCALE);
+
+            this.sprite = new Framework.Sprite([0, 0], [60, 60], [0, 1, 2], 10, "assets/spaceship.png");
         }
 
         update(dt: number, state: GameState) {
             super.update(dt, state);
             this.timeSinceLastFiring += dt;
+            this.sprite.update(dt);
         }
 
         burn(dt: number): void {
@@ -219,13 +224,7 @@ namespace Asteroids.Entities {
             ctx.save();
             ctx.translate(x, y);
             ctx.rotate(heading);
-            ctx.fillStyle = "red";
-            ctx.beginPath();
-            ctx.moveTo(-2 * scale, 0);
-            ctx.lineTo(2 * scale, 2 * scale);
-            ctx.lineTo(scale, 0);
-            ctx.lineTo(2 * scale, -2 * scale);
-            ctx.fill();
+            this.sprite.render(ctx, state.resourceManager, [-30, -30]);
             ctx.translate(x, y);
             ctx.restore();
         }

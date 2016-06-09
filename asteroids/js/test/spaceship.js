@@ -5,8 +5,9 @@ var Test;
     var Bullet = Asteroids.Entities.Bullet;
     var state = null;
     var spaceship = null;
+    var resourceManager = new Framework.ResourceManager();
     beforeEach(function () {
-        state = new Asteroids.GameState([100, 100], false);
+        state = new Asteroids.GameState([100, 100], resourceManager, false);
         spaceship = new Asteroids.Entities.Spaceship([0, 0]);
     });
     describe("A spaceship", function () {

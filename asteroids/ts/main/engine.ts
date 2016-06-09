@@ -1,8 +1,6 @@
 "use strict";
 
-import Entity = Asteroids.Entities.Entity;
-
-namespace Asteroids {
+namespace Framework {
     export class Engine {
         public lastTime: number = Date.now();
 

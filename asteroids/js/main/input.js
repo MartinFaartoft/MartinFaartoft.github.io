@@ -1,11 +1,11 @@
 "use strict";
-var Input;
-(function (Input) {
-    function isDown(key) {
+var Framework;
+(function (Framework) {
+    function isKeyDown(key) {
         return pressedKeys[key.toUpperCase()];
     }
-    Input.isDown = isDown;
-})(Input || (Input = {}));
+    Framework.isKeyDown = isKeyDown;
+})(Framework || (Framework = {}));
 var pressedKeys = {};
 (function () {
     function setKey(event, status) {

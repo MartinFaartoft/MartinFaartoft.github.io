@@ -1,7 +1,6 @@
 "use strict";
-var Entity = Asteroids.Entities.Entity;
-var Asteroids;
-(function (Asteroids) {
+var Framework;
+(function (Framework) {
     var Engine = (function () {
         function Engine(state, ctx, debug) {
             this.state = state;
@@ -31,6 +30,6 @@ var Asteroids;
         };
         return Engine;
     }());
-    Asteroids.Engine = Engine;
-})(Asteroids || (Asteroids = {}));
+    Framework.Engine = Engine;
+})(Framework || (Framework = {}));
 //# sourceMappingURL=engine.js.map

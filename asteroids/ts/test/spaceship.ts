@@ -7,9 +7,10 @@ namespace Test {
 
     let state: GameState = null;
     let spaceship: Spaceship = null;
+    let resourceManager: Framework.ResourceManager = new Framework.ResourceManager();
     
     beforeEach(() =>  {
-        state = new Asteroids.GameState([100, 100], false);
+        state = new Asteroids.GameState([100, 100], resourceManager, false);
         spaceship = new Asteroids.Entities.Spaceship([0, 0]);
     });
 

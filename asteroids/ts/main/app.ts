@@ -2,7 +2,7 @@
 
 import Meteor = Asteroids.Entities.Meteor;
 import GameState = Asteroids.GameState;
-import Engine = Asteroids.Engine;
+import Engine = Framework.Engine;
 
 // create canvas
 let canvas = document.createElement("canvas");
@@ -12,10 +12,12 @@ canvas.height = window.innerHeight - 50;
 document.body.appendChild(canvas);
 
 // prepare game state and engine
-let debug = true;
+let debug = false;
 let dimensions = [canvas.width, canvas.height];
-let state: GameState = new GameState(dimensions, debug);
+let resourceManager: Framework.ResourceManager = new Framework.ResourceManager();
+let state: GameState = new GameState(dimensions, resourceManager, debug);
 let engine: Engine = new Engine(state, ctx, debug);
+
 
 function init() {
     state.meteors.push(new Meteor([canvas.width / 10, canvas.height / 5], [100, -50], 3));
@@ -25,5 +27,6 @@ function init() {
 
 init();
 
-// start game
-engine.run();
+// load resources and start game when ready
+resourceManager.onReady(() => engine.run());
+resourceManager.preload(["assets/spaceship.png"]);

@@ -3,6 +3,7 @@
 namespace Asteroids {
     import Background = Entities.Background;
     import GameOverScreen = Entities.GameOverScreen;
+    import Entity = Entities.Entity;
     import Spaceship = Entities.Spaceship;
     import Bullet = Entities.Bullet;
     import Meteor = Entities.Meteor;
@@ -17,7 +18,9 @@ namespace Asteroids {
         public spaceship: Spaceship;
         public isGameOver: boolean = false;
 
-        constructor(public dimensions: number[], public debug: boolean) {
+        constructor(public dimensions: number[], 
+                    public resourceManager: Framework.ResourceManager, 
+                    public debug: boolean) {
             this.spaceship = new Spaceship([dimensions[0] / 2.0, dimensions[1] / 2.0]);
         }
 
@@ -28,7 +31,7 @@ namespace Asteroids {
 
         update(dt: number) {
             this.handleInput(dt);
-            this.applyToEntities(e => e.update(dt, dimensions));
+            this.applyToEntities(e => e.update(dt, this));
             this.detectCollisions();
             this.garbageCollect();
         }
@@ -56,19 +59,19 @@ namespace Asteroids {
 
         handleInput(dt) {
             if (!this.isGameOver) {
-                if (Input.isDown("UP")) {
+                if (Framework.isKeyDown("UP")) {
                     this.spaceship.burn(dt);
                 }
 
-                if (Input.isDown("LEFT")) {
+                if (Framework.isKeyDown("LEFT")) {
                     this.spaceship.rotateCounterClockWise(dt);
                 }
 
-                if (Input.isDown("RIGHT")) {
+                if (Framework.isKeyDown("RIGHT")) {
                     this.spaceship.rotateClockWise(dt);
                 }
 
-                if (Input.isDown("SPACE")) {
+                if (Framework.isKeyDown("SPACE")) {
                     this.spaceship.fire(this);
                 }
             }

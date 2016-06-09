@@ -1,7 +1,7 @@
 "use strict";
 
-namespace Input {
-    export function isDown(key: string) {
+namespace Framework {
+    export function isKeyDown(key: string) {
         return pressedKeys[key.toUpperCase()];
     }
 }

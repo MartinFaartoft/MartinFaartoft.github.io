@@ -6,8 +6,9 @@ var Asteroids;
     var Spaceship = Asteroids.Entities.Spaceship;
     var DebugDisplay = Asteroids.Entities.DebugDisplay;
     var GameState = (function () {
-        function GameState(dimensions, debug) {
+        function GameState(dimensions, resourceManager, debug) {
             this.dimensions = dimensions;
+            this.resourceManager = resourceManager;
             this.debug = debug;
             this.background = new Background();
             this.gameOverScreen = new GameOverScreen();
@@ -22,8 +23,9 @@ var Asteroids;
             this.meteors = this.meteors.filter(function (m) { return !m.destroyed; });
         };
         GameState.prototype.update = function (dt) {
+            var _this = this;
             this.handleInput(dt);
-            this.applyToEntities(function (e) { return e.update(dt, dimensions); });
+            this.applyToEntities(function (e) { return e.update(dt, _this); });
             this.detectCollisions();
             this.garbageCollect();
         };
@@ -47,16 +49,16 @@ var Asteroids;
         };
         GameState.prototype.handleInput = function (dt) {
             if (!this.isGameOver) {
-                if (Input.isDown("UP")) {
+                if (Framework.isKeyDown("UP")) {
                     this.spaceship.burn(dt);
                 }
-                if (Input.isDown("LEFT")) {
+                if (Framework.isKeyDown("LEFT")) {
                     this.spaceship.rotateCounterClockWise(dt);
                 }
-                if (Input.isDown("RIGHT")) {
+                if (Framework.isKeyDown("RIGHT")) {
                     this.spaceship.rotateClockWise(dt);
                 }
-                if (Input.isDown("SPACE")) {
+                if (Framework.isKeyDown("SPACE")) {
                     this.spaceship.fire(this);
                 }
             }

@@ -12,7 +12,7 @@ namespace Test {
     let smallMeteor: Meteor = null;
     
     beforeEach(() =>  {
-        state = new GameState([100, 100], false);
+        state = new GameState([100, 100], null, false);
         spaceship = new Spaceship([0, 0]);
         bullet = new Bullet([0, 0], [0, 0]);
         largeMeteor = new Meteor([0, 0], [0, 0], 3);
