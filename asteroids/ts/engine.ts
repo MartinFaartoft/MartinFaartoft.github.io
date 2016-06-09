@@ -5,32 +5,17 @@ import Entity = Asteroids.Entities.Entity;
 namespace Asteroids {
     export class Engine {
         public lastTime: number = Date.now();
-        public debug: boolean = false;
 
-        constructor(public state: GameState, public ctx: CanvasRenderingContext2D) {
-
-        }
+        constructor(public state: GameState, public ctx: CanvasRenderingContext2D, public debug: boolean) { }
 
         run() {
             let now = Date.now();
             let dt = (now - this.lastTime) / 1000.0;
 
-            //if (!state.isGameOver) {
-                this.update(dt);
-                this.render();
-                this.lastTime = now;
-                this.requestAnimationFrameShim.call(window, this.run.bind(this));
-            //}
-            // else {
-            //     this.renderGameOver();
-            // }
-        }
-
-        update(dt) {
-            state.handleInput(dt);
             state.update(dt);
-            state.detectCollisions();
-            state.garbageCollect();
+            state.render(ctx);
+            this.lastTime = now;
+            this.requestAnimationFrameShim.call(window, this.run.bind(this));
         }
 
         render() {

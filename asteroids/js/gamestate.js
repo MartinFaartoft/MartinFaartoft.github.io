@@ -4,11 +4,14 @@ var Asteroids;
     var Background = Asteroids.Entities.Background;
     var GameOverScreen = Asteroids.Entities.GameOverScreen;
     var Spaceship = Asteroids.Entities.Spaceship;
+    var DebugDisplay = Asteroids.Entities.DebugDisplay;
     var GameState = (function () {
-        function GameState(dimensions) {
+        function GameState(dimensions, debug) {
             this.dimensions = dimensions;
+            this.debug = debug;
             this.background = new Background();
             this.gameOverScreen = new GameOverScreen();
+            this.debugDisplay = new DebugDisplay();
             this.meteors = [];
             this.bullets = [];
             this.isGameOver = false;
@@ -19,11 +22,17 @@ var Asteroids;
             this.meteors = this.meteors.filter(function (m) { return !m.destroyed; });
         };
         GameState.prototype.update = function (dt) {
+            this.handleInput(dt);
             this.applyToEntities(function (e) { return e.update(dt, dimensions); });
+            this.detectCollisions();
+            this.garbageCollect();
+        };
+        GameState.prototype.render = function (ctx) {
+            var _this = this;
+            this.applyToEntities(function (e) { return e.render(ctx, _this); });
         };
         GameState.prototype.applyToEntities = function (action) {
             action(this.background);
-            action(this.gameOverScreen);
             action(this.spaceship);
             for (var _i = 0, _a = this.meteors; _i < _a.length; _i++) {
                 var m = _a[_i];
@@ -33,19 +42,23 @@ var Asteroids;
                 var b = _c[_b];
                 action(b);
             }
+            action(this.gameOverScreen);
+            action(this.debugDisplay);
         };
         GameState.prototype.handleInput = function (dt) {
-            if (Input.isDown("UP")) {
-                this.spaceship.burn(dt);
-            }
-            if (Input.isDown("LEFT")) {
-                this.spaceship.rotateCounterClockWise(dt);
-            }
-            if (Input.isDown("RIGHT")) {
-                this.spaceship.rotateClockWise(dt);
-            }
-            if (Input.isDown("SPACE")) {
-                this.spaceship.fire(this);
+            if (!this.isGameOver) {
+                if (Input.isDown("UP")) {
+                    this.spaceship.burn(dt);
+                }
+                if (Input.isDown("LEFT")) {
+                    this.spaceship.rotateCounterClockWise(dt);
+                }
+                if (Input.isDown("RIGHT")) {
+                    this.spaceship.rotateClockWise(dt);
+                }
+                if (Input.isDown("SPACE")) {
+                    this.spaceship.fire(this);
+                }
             }
         };
         GameState.prototype.detectCollisions = function () {

@@ -6,16 +6,18 @@ namespace Asteroids {
     import Spaceship = Entities.Spaceship;
     import Bullet = Entities.Bullet;
     import Meteor = Entities.Meteor;
+    import DebugDisplay = Entities.DebugDisplay;
 
     export class GameState {
         public background: Background = new Background();
         public gameOverScreen: GameOverScreen = new GameOverScreen();
+        public debugDisplay: DebugDisplay = new DebugDisplay();
         public meteors: Meteor[] = [];
         public bullets: Bullet[] = [];
         public spaceship: Spaceship;
         public isGameOver: boolean = false;
 
-        constructor(public dimensions: number[]) {
+        constructor(public dimensions: number[], public debug: boolean) {
             this.spaceship = new Spaceship([dimensions[0] / 2.0, dimensions[1] / 2.0]);
         }
 
@@ -25,12 +27,18 @@ namespace Asteroids {
         }
 
         update(dt: number) {
+            this.handleInput(dt);
             this.applyToEntities(e => e.update(dt, dimensions));
+            this.detectCollisions();
+            this.garbageCollect();
+        }
+
+        render(ctx: CanvasRenderingContext2D) {
+            this.applyToEntities(e => e.render(ctx, this));
         }
 
         applyToEntities(action: (Entity) => void) {
             action(this.background);
-            action(this.gameOverScreen);
 
             action(this.spaceship);
 
@@ -41,23 +49,28 @@ namespace Asteroids {
             for (let b of this.bullets) {
                 action(b);
             }
+
+            action(this.gameOverScreen);
+            action(this.debugDisplay);
         }
 
         handleInput(dt) {
-            if (Input.isDown("UP")) {
-                this.spaceship.burn(dt);
-            }
+            if (!this.isGameOver) {
+                if (Input.isDown("UP")) {
+                    this.spaceship.burn(dt);
+                }
 
-            if (Input.isDown("LEFT")) {
-                this.spaceship.rotateCounterClockWise(dt);
-            }
+                if (Input.isDown("LEFT")) {
+                    this.spaceship.rotateCounterClockWise(dt);
+                }
 
-            if (Input.isDown("RIGHT")) {
-                this.spaceship.rotateClockWise(dt);
-            }
+                if (Input.isDown("RIGHT")) {
+                    this.spaceship.rotateClockWise(dt);
+                }
 
-            if (Input.isDown("SPACE")) {
-                this.spaceship.fire(this);
+                if (Input.isDown("SPACE")) {
+                    this.spaceship.fire(this);
+                }
             }
         }
 

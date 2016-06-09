@@ -236,6 +236,27 @@ var Asteroids;
             return GameOverScreen;
         }(Entity));
         Entities.GameOverScreen = GameOverScreen;
+        var DebugDisplay = (function (_super) {
+            __extends(DebugDisplay, _super);
+            function DebugDisplay() {
+                _super.call(this, [0, 0], [0, 0], 0);
+            }
+            DebugDisplay.prototype.render = function (ctx, state) {
+                if (state.debug) {
+                    ctx.fillStyle = "white";
+                    ctx.font = "20px Arial";
+                    ctx.fillText("player: ", 10, 20);
+                    ctx.fillText("heading: " + this.roundToTwo(state.spaceship.heading), 20, 40);
+                    ctx.fillText("pos_x: " + this.roundToTwo(state.spaceship.pos[0]), 20, 60);
+                    ctx.fillText("pos_y: " + this.roundToTwo(state.spaceship.pos[1]), 20, 80);
+                }
+            };
+            DebugDisplay.prototype.roundToTwo = function (num) {
+                return Math.round(num * 100) / 100;
+            };
+            return DebugDisplay;
+        }(Entity));
+        Entities.DebugDisplay = DebugDisplay;
     })(Entities = Asteroids.Entities || (Asteroids.Entities = {}));
 })(Asteroids || (Asteroids = {}));
 //# sourceMappingURL=entity.js.map

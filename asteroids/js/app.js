@@ -9,9 +9,10 @@ canvas.width = window.innerWidth - 20;
 canvas.height = window.innerHeight - 50;
 document.body.appendChild(canvas);
 // prepare game state and engine
+var debug = true;
 var dimensions = [canvas.width, canvas.height];
-var state = new GameState(dimensions);
-var engine = new Engine(state, ctx);
+var state = new GameState(dimensions, debug);
+var engine = new Engine(state, ctx, debug);
 function init() {
     state.meteors.push(new Meteor([canvas.width / 10, canvas.height / 5], [100, -50], 3));
     state.meteors.push(new Meteor([canvas.width * 7 / 10, canvas.height * 4 / 5], [-100, 100], 3));

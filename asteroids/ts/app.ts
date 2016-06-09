@@ -12,9 +12,10 @@ canvas.height = window.innerHeight - 50;
 document.body.appendChild(canvas);
 
 // prepare game state and engine
+let debug = true;
 let dimensions = [canvas.width, canvas.height];
-let state: GameState = new GameState(dimensions);
-let engine: Engine = new Engine(state, ctx);
+let state: GameState = new GameState(dimensions, debug);
+let engine: Engine = new Engine(state, ctx, debug);
 
 function init() {
     state.meteors.push(new Meteor([canvas.width / 10, canvas.height / 5], [100, -50], 3));

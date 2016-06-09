@@ -3,11 +3,11 @@ var Entity = Asteroids.Entities.Entity;
 var Asteroids;
 (function (Asteroids) {
     var Engine = (function () {
-        function Engine(state, ctx) {
+        function Engine(state, ctx, debug) {
             this.state = state;
             this.ctx = ctx;
+            this.debug = debug;
             this.lastTime = Date.now();
-            this.debug = false;
             // A cross-browser requestAnimationFrame
             // See https://hacks.mozilla.org/2011/08/animating-with-javascript-from-setinterval-to-requestanimationframe/
             this.requestAnimationFrameShim = (function () {
@@ -24,21 +24,10 @@ var Asteroids;
         Engine.prototype.run = function () {
             var now = Date.now();
             var dt = (now - this.lastTime) / 1000.0;
-            //if (!state.isGameOver) {
-            this.update(dt);
-            this.render();
+            state.update(dt);
+            state.render(ctx);
             this.lastTime = now;
             this.requestAnimationFrameShim.call(window, this.run.bind(this));
-            //}
-            // else {
-            //     this.renderGameOver();
-            // }
-        };
-        Engine.prototype.update = function (dt) {
-            state.handleInput(dt);
-            state.update(dt);
-            state.detectCollisions();
-            state.garbageCollect();
         };
         Engine.prototype.render = function () {
             state.applyToEntities(function (e) { return e.render(ctx, state); });
