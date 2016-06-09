@@ -15,12 +15,12 @@ var Test;
             spaceship.fire(state);
             expect(state.bullets.length).toEqual(1);
         });
-        it("should not fire before cooldown", function () {
+        it("should not be able to fire again before cooldown", function () {
             spaceship.fire(state);
             spaceship.fire(state);
             expect(state.bullets.length).toEqual(1);
         });
-        it("should fire after cooldown", function () {
+        it("should be able to fire again after cooldown", function () {
             spaceship.fire(state);
             spaceship.update(Spaceship.SHOT_DELAY, state);
             spaceship.fire(state);

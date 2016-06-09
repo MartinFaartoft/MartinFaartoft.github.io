@@ -59,10 +59,14 @@ var Asteroids;
             function Meteor(pos, speed, size) {
                 _super.call(this, pos, speed, size * Meteor.SCALING_FACTOR);
                 this.size = size;
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotationSpeed = Math.random() * 1.5;
                 this.sprite = new Framework.Sprite([0, 0], [90, 90], [0, 1, 2], 3, "assets/meteor.png");
             }
             Meteor.prototype.update = function (dt, state) {
                 _super.prototype.update.call(this, dt, state);
+                this.rotation += this.rotationSpeed * dt;
+                this.rotation = this.rotation % (Math.PI * 2);
                 this.sprite.update(dt);
             };
             Meteor.prototype.explode = function () {
@@ -95,7 +99,7 @@ var Asteroids;
                 }
             };
             Meteor.prototype.renderInternal = function (ctx, x, y, radius, state) {
-                this.sprite.render(ctx, state.resourceManager, [x - radius, y - radius], [radius * 2, radius * 2]);
+                this.sprite.render(ctx, state.resourceManager, [x, y], [radius * 2, radius * 2], this.rotation);
             };
             Meteor.SCALING_FACTOR = 30;
             Meteor.SPLIT_FACTOR = 3;
@@ -191,13 +195,7 @@ var Asteroids;
                 }
             };
             Spaceship.prototype.renderInternal = function (ctx, x, y, heading, state) {
-                var scale = Spaceship.SCALE;
-                ctx.save();
-                ctx.translate(x, y);
-                ctx.rotate(heading);
-                this.sprite.render(ctx, state.resourceManager, [-30, -30], this.sprite.size);
-                ctx.translate(x, y);
-                ctx.restore();
+                this.sprite.render(ctx, state.resourceManager, [x, y], this.sprite.spriteSize, this.heading);
             };
             Spaceship.SCALE = 15;
             Spaceship.SPRITE_RADIUS = 2;

@@ -63,6 +63,8 @@ namespace Asteroids.Entities {
         public static SPLIT_FACTOR: number = 3;
         public static POST_EXPLOSION_MAX_SPEED: number = 200;
         private sprite: Framework.Sprite;
+        private rotation: number = Math.random() * Math.PI * 2;
+        private rotationSpeed: number = Math.random() * 1.5;
 
         constructor(pos: number[], speed: number[], public size: number) {
             super(pos, speed, size * Meteor.SCALING_FACTOR);
@@ -72,6 +74,8 @@ namespace Asteroids.Entities {
 
         update(dt: number, state: GameState) {
             super.update(dt, state);
+            this.rotation += this.rotationSpeed * dt;
+            this.rotation = this.rotation % (Math.PI * 2);
             this.sprite.update(dt);
         }
 
@@ -112,7 +116,7 @@ namespace Asteroids.Entities {
         }
 
         private renderInternal(ctx: CanvasRenderingContext2D, x: number, y: number, radius: number, state: GameState) {
-            this.sprite.render(ctx, state.resourceManager, [x - radius, y - radius], [radius * 2, radius * 2]);
+            this.sprite.render(ctx, state.resourceManager, [x, y], [radius * 2, radius * 2], this.rotation);
         }
     }
 
@@ -224,13 +228,7 @@ namespace Asteroids.Entities {
         }
 
         private renderInternal(ctx: CanvasRenderingContext2D, x: number, y: number, heading: number, state: GameState) {
-            let scale = Spaceship.SCALE;
-            ctx.save();
-            ctx.translate(x, y);
-            ctx.rotate(heading);
-            this.sprite.render(ctx, state.resourceManager, [-30, -30], this.sprite.size);
-            ctx.translate(x, y);
-            ctx.restore();
+            this.sprite.render(ctx, state.resourceManager, [x, y], this.sprite.spriteSize, this.heading);
         }
     }
 

@@ -20,14 +20,14 @@ namespace Test {
             expect(state.bullets.length).toEqual(1);
         });
 
-        it("should not fire before cooldown", () => {
+        it("should not be able to fire again before cooldown", () => {
             spaceship.fire(state);
             spaceship.fire(state);
 
             expect(state.bullets.length).toEqual(1);
         });
 
-        it("should fire after cooldown", () => {
+        it("should be able to fire again after cooldown", () => {
             spaceship.fire(state);
             spaceship.update(Spaceship.SHOT_DELAY, state);
             spaceship.fire(state);

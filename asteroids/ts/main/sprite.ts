@@ -5,8 +5,8 @@ namespace Framework {
     export class Sprite {
         index: number = 0;
 
-        constructor(public spriteSheetPosition: number[], 
-                    public size: number[], 
+        constructor(public spriteSheetCoordinates: number[], 
+                    public spriteSize: number[], 
                     public frames: number[], 
                     public speed: number, 
                     public url: string) {
@@ -17,7 +17,11 @@ namespace Framework {
             this.index = this.index + this.speed * dt % this.frames.length;
         }
 
-        render(ctx: CanvasRenderingContext2D, resourceManager: ResourceManager, pos: number[], size: number[]) {
+        render(ctx: CanvasRenderingContext2D, 
+               resourceManager: ResourceManager, 
+               pos: number[], 
+               size: number[],
+               rotation: number) {
             let frame = 0;
 
             if (this.speed > 0) {
@@ -25,13 +29,31 @@ namespace Framework {
                 frame = this.frames[idx % this.frames.length];
             }
 
-            let x = this.spriteSheetPosition[0] + frame * this.size[0];
-            let y = this.spriteSheetPosition[1];
-            ctx.drawImage(resourceManager.get(this.url),
-                        x, y,
-                        this.size[0], this.size[1],
-                        pos[0], pos[1],
+            let sprite_x = this.spriteSheetCoordinates[0] + frame * this.spriteSize[0];
+            let sprite_y = this.spriteSheetCoordinates[1];
+
+            if (rotation === 0) {
+                ctx.drawImage(resourceManager.get(this.url),
+                        sprite_x, sprite_y,
+                        this.spriteSize[0], this.spriteSize[1],
+                        pos[0] - size[0] / 2.0, pos[1] - size[1] / 2.0,
                         size[0], size[1]);
+            }
+            else {
+                ctx.translate(pos[0], pos[1]);
+                ctx.rotate(rotation);
+                
+                ctx.drawImage(resourceManager.get(this.url),
+                            sprite_x, sprite_y,
+                            this.spriteSize[0], this.spriteSize[1],
+                            -size[0] / 2, -size[1] / 2,
+                            size[0], size[1]);
+                
+                ctx.rotate(-rotation);
+                ctx.translate(-pos[0], -pos[1]);
+            }
+
+            
         }
     }
 }
