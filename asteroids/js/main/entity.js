@@ -54,6 +54,22 @@ var Asteroids;
             return Entity;
         }());
         Entities.Entity = Entity;
+        var EntityWithSprites = (function (_super) {
+            __extends(EntityWithSprites, _super);
+            function EntityWithSprites(pos, speed, radius) {
+                _super.call(this, pos, speed, radius);
+                this.sprites = [];
+            }
+            EntityWithSprites.prototype.update = function (dt, state) {
+                _super.prototype.update.call(this, dt, state);
+                for (var _i = 0, _a = this.sprites; _i < _a.length; _i++) {
+                    var sprite = _a[_i];
+                    sprite.update(dt);
+                }
+            };
+            return EntityWithSprites;
+        }(Entity));
+        Entities.EntityWithSprites = EntityWithSprites;
         var Meteor = (function (_super) {
             __extends(Meteor, _super);
             function Meteor(pos, speed, size) {
@@ -61,13 +77,12 @@ var Asteroids;
                 this.size = size;
                 this.rotation = Math.random() * Math.PI * 2;
                 this.rotationSpeed = Math.random() * 1.5;
-                this.sprite = new Framework.Sprite([0, 0], [90, 90], [0, 1, 2], 3, "assets/meteor.png");
+                this.sprites.push(new Framework.Sprite([0, 0], [90, 90], [0, 1, 2], 3, "assets/meteor.png"));
             }
             Meteor.prototype.update = function (dt, state) {
                 _super.prototype.update.call(this, dt, state);
                 this.rotation += this.rotationSpeed * dt;
                 this.rotation = this.rotation % (Math.PI * 2);
-                this.sprite.update(dt);
             };
             Meteor.prototype.explode = function () {
                 if (this.size === 1) {
@@ -99,13 +114,13 @@ var Asteroids;
                 }
             };
             Meteor.prototype.renderInternal = function (ctx, x, y, radius, state) {
-                this.sprite.render(ctx, state.resourceManager, [x, y], [radius * 2, radius * 2], this.rotation);
+                this.sprites[0].render(ctx, state.resourceManager, [x, y], [radius * 2, radius * 2], this.rotation);
             };
             Meteor.SCALING_FACTOR = 30;
             Meteor.SPLIT_FACTOR = 3;
             Meteor.POST_EXPLOSION_MAX_SPEED = 200;
             return Meteor;
-        }(Entity));
+        }(EntityWithSprites));
         Entities.Meteor = Meteor;
         var Bullet = (function (_super) {
             __extends(Bullet, _super);
@@ -149,12 +164,11 @@ var Asteroids;
                 this.burning = false;
                 this.spaceShipSprite = new Framework.Sprite([0, 0], [59, 59], [0, 1, 2], 5, "assets/spaceship.png");
                 this.burnSprite = new Framework.Sprite([0, 0], [59, 59], [0, 1, 2, 1], 8, "assets/burn.png");
+                this.sprites.push(this.spaceShipSprite, this.burnSprite);
             }
             Spaceship.prototype.update = function (dt, state) {
                 _super.prototype.update.call(this, dt, state);
                 this.timeSinceLastFiring += dt;
-                this.spaceShipSprite.update(dt);
-                this.burnSprite.update(dt);
             };
             Spaceship.prototype.burn = function (dt) {
                 var d_x = Math.cos(this.heading);
@@ -214,7 +228,7 @@ var Asteroids;
             Spaceship.SHOT_DELAY = .1; // seconds
             Spaceship.RADIUS = 29;
             return Spaceship;
-        }(Entity));
+        }(EntityWithSprites));
         Entities.Spaceship = Spaceship;
         var Explosion = (function (_super) {
             __extends(Explosion, _super);
@@ -223,7 +237,8 @@ var Asteroids;
                 this.age = 0;
                 this.sprite = new Framework.Sprite([0, 0], [120, 120], [0, 2, 1, 0, 1, 2, 0], 8, "assets/explosion.png");
             }
-            Explosion.prototype.update = function (dt) {
+            Explosion.prototype.update = function (dt, state) {
+                _super.prototype.update.call(this, dt, state);
                 this.sprite.update(dt);
                 this.age += dt;
                 if (this.age > Explosion.LIFESPAN) {

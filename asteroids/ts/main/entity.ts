@@ -58,25 +58,38 @@ namespace Asteroids.Entities {
         abstract render(ctx: CanvasRenderingContext2D, state: GameState);
     }
 
-    export class Meteor extends Entity implements Collidable {
+    export abstract class EntityWithSprites extends Entity {
+        public sprites: Framework.Sprite[] = [];
+        constructor(pos: number[], speed: number[], radius: number) {
+            super(pos, speed, radius);
+        }
+
+        update(dt, state) {
+            super.update(dt, state);
+            for (let sprite of this.sprites) {
+                sprite.update(dt);
+            }
+        }
+    }
+
+    export class Meteor extends EntityWithSprites implements Collidable {
         public static SCALING_FACTOR: number = 30;
         public static SPLIT_FACTOR: number = 3;
         public static POST_EXPLOSION_MAX_SPEED: number = 200;
-        private sprite: Framework.Sprite;
+
         private rotation: number = Math.random() * Math.PI * 2;
         private rotationSpeed: number = Math.random() * 1.5;
 
         constructor(pos: number[], speed: number[], public size: number) {
             super(pos, speed, size * Meteor.SCALING_FACTOR);
 
-            this.sprite = new Framework.Sprite([0, 0], [90, 90], [0, 1, 2], 3, "assets/meteor.png");
+            this.sprites.push(new Framework.Sprite([0, 0], [90, 90], [0, 1, 2], 3, "assets/meteor.png"));
         }
 
         update(dt: number, state: GameState) {
             super.update(dt, state);
             this.rotation += this.rotationSpeed * dt;
             this.rotation = this.rotation % (Math.PI * 2);
-            this.sprite.update(dt);
         }
 
         private explode(): Meteor[] {
@@ -116,7 +129,7 @@ namespace Asteroids.Entities {
         }
 
         private renderInternal(ctx: CanvasRenderingContext2D, x: number, y: number, radius: number, state: GameState) {
-            this.sprite.render(ctx, state.resourceManager, [x, y], [radius * 2, radius * 2], this.rotation);
+            this.sprites[0].render(ctx, state.resourceManager, [x, y], [radius * 2, radius * 2], this.rotation);
         }
     }
 
@@ -153,7 +166,7 @@ namespace Asteroids.Entities {
         }
     }
 
-    export class Spaceship extends Entity implements Collidable {
+    export class Spaceship extends EntityWithSprites implements Collidable {
         static SHOT_DELAY: number = .1; // seconds
         static RADIUS: number = 29;
         
@@ -171,13 +184,12 @@ namespace Asteroids.Entities {
 
             this.spaceShipSprite = new Framework.Sprite([0, 0], [59, 59], [0, 1, 2], 5, "assets/spaceship.png");
             this.burnSprite = new Framework.Sprite([0, 0], [59, 59], [0, 1, 2, 1], 8, "assets/burn.png");
+            this.sprites.push(this.spaceShipSprite, this.burnSprite);
         }
 
         update(dt: number, state: GameState) {
             super.update(dt, state);
             this.timeSinceLastFiring += dt;
-            this.spaceShipSprite.update(dt);
-            this.burnSprite.update(dt);
         }
 
         burn(dt: number): void {
@@ -259,7 +271,8 @@ namespace Asteroids.Entities {
             this.sprite = new Framework.Sprite([0, 0], [120, 120], [0, 2, 1, 0, 1, 2, 0], 8, "assets/explosion.png");
         }
 
-        update(dt: number) {
+        update(dt: number, state: GameState) {
+            super.update(dt, state);
             this.sprite.update(dt);
             this.age += dt;
             if (this.age > Explosion.LIFESPAN) {
