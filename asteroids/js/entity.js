@@ -15,28 +15,41 @@ var Asteroids;
                 this.radius = radius;
                 this.destroyed = false;
             }
-            Entity.prototype.update = function (dt) {
+            Entity.prototype.update = function (dt, dimensions) {
                 this.pos[0] += this.speed[0] * dt;
                 this.pos[1] += this.speed[1] * dt;
                 this.wrap();
             };
             Entity.prototype.wrap = function () {
-                //exit right edge
-                if (this.pos[0] > canvas.width) {
-                    this.pos[0] = 0;
+                // exit right edge
+                if (this.pos[0] > dimensions[0]) {
+                    this.pos[0] -= dimensions[0];
                 }
-                //exit left edge
+                // exit left edge
                 if (this.pos[0] < 0) {
-                    this.pos[0] = canvas.width;
+                    this.pos[0] += dimensions[0];
                 }
-                //exit top
+                // exit top
                 if (this.pos[1] < 0) {
-                    this.pos[1] = canvas.height;
+                    this.pos[1] += dimensions[1];
                 }
-                //exit bottom
-                if (this.pos[1] > canvas.height) {
-                    this.pos[1] = 0;
+                // exit bottom
+                if (this.pos[1] > dimensions[1]) {
+                    this.pos[1] -= dimensions[1];
                 }
+            };
+            Entity.prototype.getWrappedBoundingCircles = function (dimensions) {
+                var boundingCircles = [this];
+                for (var i = -1; i <= 1; i++) {
+                    for (var j = -1; j <= 1; j++) {
+                        boundingCircles.push({
+                            pos: [this.pos[0] + i * dimensions[0], this.pos[1] + j * dimensions[1]],
+                            radius: this.radius,
+                            entity: this
+                        });
+                    }
+                }
+                return boundingCircles;
             };
             return Entity;
         }());
@@ -61,17 +74,25 @@ var Asteroids;
                 }
                 return meteors;
             };
-            Meteor.prototype.render = function (ctx) {
-                for (var i = -1; i <= 1; i++) {
-                    for (var j = -1; j <= 1; j++) {
-                        this.renderInternal(ctx, this.pos[0] + i * dimensions[0], this.pos[1] + j * dimensions[1], this.radius);
+            Meteor.prototype.collideWith = function (other, state) {
+                if (other instanceof Bullet) {
+                    this.destroyed = true;
+                    for (var _i = 0, _a = this.explode(); _i < _a.length; _i++) {
+                        var meteor = _a[_i];
+                        state.meteors.push(meteor);
                     }
                 }
             };
+            Meteor.prototype.render = function (ctx, state) {
+                for (var _i = 0, _a = this.getWrappedBoundingCircles(dimensions); _i < _a.length; _i++) {
+                    var bc = _a[_i];
+                    this.renderInternal(ctx, bc.pos[0], bc.pos[1], bc.radius);
+                }
+            };
             Meteor.prototype.renderInternal = function (ctx, x, y, radius) {
-                ctx.fillStyle = 'grey';
+                ctx.fillStyle = "orange";
                 ctx.beginPath();
-                ctx.arc(x, y, radius, 0, two_pi, true);
+                ctx.arc(x, y, radius, 0, Math.PI * 2, true);
                 ctx.closePath();
                 ctx.fill();
             };
@@ -87,16 +108,21 @@ var Asteroids;
                 _super.call(this, pos, speed, Bullet.RADIUS);
                 this.endTime = endTime;
             }
-            Bullet.prototype.update = function (dt) {
-                _super.prototype.update.call(this, dt);
+            Bullet.prototype.update = function (dt, dimensions) {
+                _super.prototype.update.call(this, dt, dimensions);
                 if (this.endTime < Date.now()) {
                     this.destroyed = true;
                 }
             };
+            Bullet.prototype.collideWith = function (other, state) {
+                if (other instanceof Meteor) {
+                    this.destroyed = true;
+                }
+            };
             Bullet.prototype.render = function (ctx) {
-                ctx.fillStyle = 'green';
+                ctx.fillStyle = "green";
                 ctx.beginPath();
-                ctx.arc(this.pos[0], this.pos[1], this.radius, 0, two_pi, true);
+                ctx.arc(this.pos[0], this.pos[1], this.radius, 0, Math.PI * 2, true);
                 ctx.closePath();
                 ctx.fill();
             };
@@ -108,7 +134,7 @@ var Asteroids;
             __extends(Spaceship, _super);
             function Spaceship(pos) {
                 _super.call(this, pos, [0, 0], Spaceship.SPRITE_RADIUS * Spaceship.SCALE);
-                this.heading = Math.PI / 2.0; //facing north by default
+                this.heading = Math.PI / 2.0; // facing north by default
                 this.rotation_speed = 150 * Math.PI / 180.0;
                 this.acceleration = 300;
                 this.lastFire = 0;
@@ -143,11 +169,16 @@ var Asteroids;
                 this.heading -= this.rotation_speed * dt;
                 this.heading = this.heading % (Math.PI * 2);
             };
-            Spaceship.prototype.render = function (ctx, dimensions) {
-                for (var i = -1; i <= 1; i++) {
-                    for (var j = -1; j <= 1; j++) {
-                        this.renderInternal(ctx, this.pos[0] + i * dimensions[0], this.pos[1] + j * dimensions[1], this.heading);
-                    }
+            Spaceship.prototype.collideWith = function (other, state) {
+                if (other instanceof Meteor) {
+                    this.destroyed = true;
+                    state.isGameOver = true;
+                }
+            };
+            Spaceship.prototype.render = function (ctx, state) {
+                for (var _i = 0, _a = this.getWrappedBoundingCircles(state.dimensions); _i < _a.length; _i++) {
+                    var bc = _a[_i];
+                    this.renderInternal(ctx, bc.pos[0], bc.pos[1], this.heading);
                 }
             };
             Spaceship.prototype.renderInternal = function (ctx, x, y, heading) {
@@ -155,7 +186,7 @@ var Asteroids;
                 ctx.save();
                 ctx.translate(x, y);
                 ctx.rotate(heading);
-                ctx.fillStyle = 'red';
+                ctx.fillStyle = "red";
                 ctx.beginPath();
                 ctx.moveTo(-2 * scale, 0);
                 ctx.lineTo(2 * scale, 2 * scale);
@@ -171,6 +202,40 @@ var Asteroids;
             return Spaceship;
         }(Entity));
         Entities.Spaceship = Spaceship;
+        var Background = (function (_super) {
+            __extends(Background, _super);
+            function Background() {
+                _super.call(this, [0, 0], [0, 0], 0);
+            }
+            Background.prototype.render = function (ctx, state) {
+                ctx.fillStyle = "black";
+                ctx.fillRect(0, 0, state.dimensions[0], state.dimensions[1]);
+            };
+            Background.prototype.update = function (dt, dimensions) {
+                // intentionally left blank
+            };
+            return Background;
+        }(Entity));
+        Entities.Background = Background;
+        var GameOverScreen = (function (_super) {
+            __extends(GameOverScreen, _super);
+            function GameOverScreen() {
+                _super.call(this, [0, 0], [0, 0], 0);
+            }
+            GameOverScreen.prototype.render = function (ctx, state) {
+                if (state.isGameOver) {
+                    ctx.fillStyle = "red";
+                    ctx.font = "80px comic sans";
+                    var textWidth = ctx.measureText("GAME OVER").width;
+                    ctx.fillText("GAME OVER", (state.dimensions[0] - textWidth) / 2.0, state.dimensions[1] / 2.0);
+                }
+            };
+            GameOverScreen.prototype.update = function (dt, dimensions) {
+                // intentionally left blank
+            };
+            return GameOverScreen;
+        }(Entity));
+        Entities.GameOverScreen = GameOverScreen;
     })(Entities = Asteroids.Entities || (Asteroids.Entities = {}));
 })(Asteroids || (Asteroids = {}));
 //# sourceMappingURL=entity.js.map

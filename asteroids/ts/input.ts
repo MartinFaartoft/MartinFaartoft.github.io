@@ -1,7 +1,7 @@
 "use strict";
 
 namespace Input {
-    export function isDown(key:string) {
+    export function isDown(key: string) {
         return pressedKeys[key.toUpperCase()];
     }
 }
@@ -10,20 +10,20 @@ let pressedKeys = {};
 
 (function() {
     function setKey(event, status) {
-        var code = event.keyCode;
-        var key;
+        let code = event.keyCode;
+        let key;
 
-        switch(code) {
+        switch (code) {
         case 32:
-            key = 'SPACE'; break;
+            key = "SPACE"; break;
         case 37:
-            key = 'LEFT'; break;
+            key = "LEFT"; break;
         case 38:
-            key = 'UP'; break;
+            key = "UP"; break;
         case 39:
-            key = 'RIGHT'; break;
+            key = "RIGHT"; break;
         case 40:
-            key = 'DOWN'; break;
+            key = "DOWN"; break;
         default:
             // Convert ASCII codes to letters
             key = String.fromCharCode(code);
@@ -32,15 +32,15 @@ let pressedKeys = {};
         pressedKeys[key] = status;
     }
 
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener("keydown", function(e) {
         setKey(e, true);
     });
 
-    document.addEventListener('keyup', function(e) {
+    document.addEventListener("keyup", function(e) {
         setKey(e, false);
     });
 
-    window.addEventListener('blur', function() {
+    window.addEventListener("blur", function() {
         pressedKeys = {};
     });
 })();

@@ -13,19 +13,19 @@ var pressedKeys = {};
         var key;
         switch (code) {
             case 32:
-                key = 'SPACE';
+                key = "SPACE";
                 break;
             case 37:
-                key = 'LEFT';
+                key = "LEFT";
                 break;
             case 38:
-                key = 'UP';
+                key = "UP";
                 break;
             case 39:
-                key = 'RIGHT';
+                key = "RIGHT";
                 break;
             case 40:
-                key = 'DOWN';
+                key = "DOWN";
                 break;
             default:
                 // Convert ASCII codes to letters
@@ -33,13 +33,13 @@ var pressedKeys = {};
         }
         pressedKeys[key] = status;
     }
-    document.addEventListener('keydown', function (e) {
+    document.addEventListener("keydown", function (e) {
         setKey(e, true);
     });
-    document.addEventListener('keyup', function (e) {
+    document.addEventListener("keyup", function (e) {
         setKey(e, false);
     });
-    window.addEventListener('blur', function () {
+    window.addEventListener("blur", function () {
         pressedKeys = {};
     });
 })();

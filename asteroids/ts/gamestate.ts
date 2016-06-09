@@ -1,7 +1,15 @@
 "use strict";
 
 namespace Asteroids {
+    import Background = Entities.Background;
+    import GameOverScreen = Entities.GameOverScreen;
+    import Spaceship = Entities.Spaceship;
+    import Bullet = Entities.Bullet;
+    import Meteor = Entities.Meteor;
+
     export class GameState {
+        public background: Background = new Background();
+        public gameOverScreen: GameOverScreen = new GameOverScreen();
         public meteors: Meteor[] = [];
         public bullets: Bullet[] = [];
         public spaceship: Spaceship;
@@ -16,34 +24,81 @@ namespace Asteroids {
             this.meteors = this.meteors.filter(m => !m.destroyed);
         }
 
-        applyToEntities(action: (Entity) => void) {
-            action(state.spaceship);
+        update(dt: number) {
+            this.applyToEntities(e => e.update(dt, dimensions));
+        }
 
-            for (var m of state.meteors) {
+        applyToEntities(action: (Entity) => void) {
+            action(this.background);
+            action(this.gameOverScreen);
+
+            action(this.spaceship);
+
+            for (let m of this.meteors) {
                 action(m);
             }
 
-            for (var b of state.bullets) {
+            for (let b of this.bullets) {
                 action(b);
             }
         }
 
         handleInput(dt) {
-            if(Input.isDown('UP')) {
-                state.spaceship.burn(dt);
+            if (Input.isDown("UP")) {
+                this.spaceship.burn(dt);
             }
-            
-            if(Input.isDown('LEFT')) {
-                state.spaceship.rotateCounterClockWise(dt);
+
+            if (Input.isDown("LEFT")) {
+                this.spaceship.rotateCounterClockWise(dt);
             }
-            
-            if(Input.isDown('RIGHT')) {
-                state.spaceship.rotateClockWise(dt);
+
+            if (Input.isDown("RIGHT")) {
+                this.spaceship.rotateClockWise(dt);
             }
-            
-            if(Input.isDown('SPACE')) {
-                state.spaceship.fire(this);
+
+            if (Input.isDown("SPACE")) {
+                this.spaceship.fire(this);
             }
+        }
+
+        detectCollisions() {
+            // bullet meteor collision
+            for (let bullet of this.bullets) {
+                for (let meteor of this.meteors) {
+                    if (this.detectCollisionWithWrapping(bullet, meteor)) {
+                        bullet.collideWith(meteor, this);
+                        meteor.collideWith(bullet, this);
+                    }
+                }
+            }
+
+            // player meteor collision
+            for (let meteor of this.meteors) {
+                if (this.detectCollisionWithWrapping(meteor, this.spaceship)) {
+                    this.spaceship.collideWith(meteor, this);
+                    meteor.collideWith(this.spaceship, this);
+                }
+            };
+        }
+
+        detectCollisionWithWrapping(a: Entity, b: Entity) {
+            let wrappedEntities = b.getWrappedBoundingCircles(this.dimensions);
+            for (let i = 0; i < wrappedEntities.length; i++) {
+                if (this.detectCollision(a, wrappedEntities[i])) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        detectCollision(a, b) {
+            // circle collision
+            let dx = a.pos[0] - b.pos[0];
+            let dy = a.pos[1] - b.pos[1];
+
+            let distance = Math.sqrt(dx * dx + dy * dy);
+            return distance < a.radius + b.radius;
         }
     }
 }

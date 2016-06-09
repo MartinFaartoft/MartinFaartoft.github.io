@@ -1,9 +1,11 @@
 "use strict";
 
+import Entity = Asteroids.Entities.Entity;
+
 namespace Asteroids {
     export class Engine {
         public lastTime: number = Date.now();
-        public debug: boolean = true;
+        public debug: boolean = false;
 
         constructor(public state: GameState, public ctx: CanvasRenderingContext2D) {
 
@@ -13,33 +15,26 @@ namespace Asteroids {
             let now = Date.now();
             let dt = (now - this.lastTime) / 1000.0;
 
-            if (!state.isGameOver) {
+            //if (!state.isGameOver) {
                 this.update(dt);
                 this.render();
                 this.lastTime = now;
                 this.requestAnimationFrameShim.call(window, this.run.bind(this));
-            }
-            else {
-                this.renderGameOver();
-            }
+            //}
+            // else {
+            //     this.renderGameOver();
+            // }
         }
 
         update(dt) {
             state.handleInput(dt);
-            this.updateEntities(dt);
-            detectCollisions();
+            state.update(dt);
+            state.detectCollisions();
             state.garbageCollect();
         }
 
-        private updateEntities(dt) {
-            state.applyToEntities(e => e.update(dt));
-        }
-
         render() {
-            ctx.fillStyle = "black";
-            ctx.fillRect(0, 0, dimensions[0], dimensions[1]);
-
-            state.applyToEntities(e => e.render(ctx, dimensions));
+            state.applyToEntities(e => e.render(ctx, state));
 
             if (this.debug) {
                 ctx.fillStyle = "white";
@@ -50,14 +45,6 @@ namespace Asteroids {
 
                 ctx.fillText("heading:" + state.spaceship.heading, 10, 10);
             }
-        }
-
-         renderGameOver() {
-            ctx.fillStyle = "black";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "red";
-            ctx.font = "80px comic sans";
-            ctx.fillText("GAME OVER", canvas.height / 2.0, canvas.width / 2.0);
         }
 
         // A cross-browser requestAnimationFrame
