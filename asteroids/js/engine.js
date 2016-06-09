@@ -10,7 +10,7 @@ var Asteroids;
             this.lastTime = Date.now();
             // A cross-browser requestAnimationFrame
             // See https://hacks.mozilla.org/2011/08/animating-with-javascript-from-setinterval-to-requestanimationframe/
-            this.requestAnimationFrameShim = (function () {
+            this.requestAnimationFrame = (function () {
                 return window.requestAnimationFrame ||
                     window.webkitRequestAnimationFrame ||
                     window.mozRequestAnimationFrame ||
@@ -27,17 +27,7 @@ var Asteroids;
             state.update(dt);
             state.render(ctx);
             this.lastTime = now;
-            this.requestAnimationFrameShim.call(window, this.run.bind(this));
-        };
-        Engine.prototype.render = function () {
-            state.applyToEntities(function (e) { return e.render(ctx, state); });
-            if (this.debug) {
-                ctx.fillStyle = "white";
-                ctx.fillRect(state.spaceship.pos[0], state.spaceship.pos[1], 3, 3);
-                // var gunPosition = state.spaceship.gunPosition();
-                // ctx.fillRect(gunPosition[0], gunPosition[1], 3, 3);
-                ctx.fillText("heading:" + state.spaceship.heading, 10, 10);
-            }
+            this.requestAnimationFrame.call(window, this.run.bind(this));
         };
         return Engine;
     }());

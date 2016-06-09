@@ -104,13 +104,15 @@ var Asteroids;
         Entities.Meteor = Meteor;
         var Bullet = (function (_super) {
             __extends(Bullet, _super);
-            function Bullet(pos, speed, endTime) {
+            function Bullet(pos, speed) {
                 _super.call(this, pos, speed, Bullet.RADIUS);
-                this.endTime = endTime;
+                this.age = 0; // seconds
             }
             Bullet.prototype.update = function (dt, dimensions) {
                 _super.prototype.update.call(this, dt, dimensions);
-                if (this.endTime < Date.now()) {
+                console.log(dt);
+                this.age += dt;
+                if (this.age > Bullet.LIFESPAN) {
                     this.destroyed = true;
                 }
             };
@@ -126,7 +128,8 @@ var Asteroids;
                 ctx.closePath();
                 ctx.fill();
             };
-            Bullet.RADIUS = 5;
+            Bullet.RADIUS = 5; // pixels
+            Bullet.LIFESPAN = 1; // seconds
             return Bullet;
         }(Entity));
         Entities.Bullet = Bullet;
@@ -137,8 +140,12 @@ var Asteroids;
                 this.heading = Math.PI / 2.0; // facing north by default
                 this.rotation_speed = 150 * Math.PI / 180.0;
                 this.acceleration = 300;
-                this.lastFire = 0;
+                this.timeSinceLastFiring = Spaceship.SHOT_DELAY; // seconds
             }
+            Spaceship.prototype.update = function (dt, dimensions) {
+                _super.prototype.update.call(this, dt, dimensions);
+                this.timeSinceLastFiring += dt;
+            };
             Spaceship.prototype.burn = function (dt) {
                 var d_x = Math.cos(this.heading);
                 var d_y = Math.sin(this.heading);
@@ -150,15 +157,15 @@ var Asteroids;
                     this.pos[1] - Math.sin(this.heading) * this.radius];
             };
             Spaceship.prototype.canFire = function () {
-                return this.lastFire < Date.now() - Spaceship.SHOT_DELAY;
+                return this.timeSinceLastFiring > Spaceship.SHOT_DELAY;
             };
             Spaceship.prototype.fire = function (state) {
                 if (this.canFire()) {
                     var gunPos = this.gunPosition();
                     var speed_x = this.speed[0] - Math.cos(this.heading) * 8 * 60;
                     var speed_y = this.speed[1] - Math.sin(this.heading) * 8 * 60;
-                    this.lastFire = Date.now();
-                    state.bullets.push(new Bullet([gunPos[0], gunPos[1]], [speed_x, speed_y], Date.now() + 1000));
+                    this.timeSinceLastFiring = 0;
+                    state.bullets.push(new Bullet([gunPos[0], gunPos[1]], [speed_x, speed_y]));
                 }
             };
             Spaceship.prototype.rotateClockWise = function (dt) {
@@ -198,7 +205,7 @@ var Asteroids;
             };
             Spaceship.SCALE = 15;
             Spaceship.SPRITE_RADIUS = 2;
-            Spaceship.SHOT_DELAY = 100;
+            Spaceship.SHOT_DELAY = .1; // seconds
             return Spaceship;
         }(Entity));
         Entities.Spaceship = Spaceship;

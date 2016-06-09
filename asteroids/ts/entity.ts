@@ -113,15 +113,19 @@ namespace Asteroids.Entities {
     }
 
     export class Bullet extends Entity implements Collidable {
-        public static RADIUS: number = 5;
+        public static RADIUS: number = 5; // pixels
+        public static LIFESPAN: number = 1; // seconds
+        private age: number = 0; // seconds
 
-        constructor(pos: number[], speed: number[], public endTime: number) {
+        constructor(pos: number[], speed: number[]) {
             super(pos, speed, Bullet.RADIUS);
         }
 
         update(dt: number, dimensions: number[]) {
             super.update(dt, dimensions);
-            if (this.endTime < Date.now()) {
+            console.log(dt);
+            this.age += dt;
+            if (this.age > Bullet.LIFESPAN) {
                 this.destroyed = true;
             }
         }
@@ -144,15 +148,20 @@ namespace Asteroids.Entities {
     export class Spaceship extends Entity implements Collidable {
         public static SCALE: number = 15;
         private static SPRITE_RADIUS: number = 2;
-        private static SHOT_DELAY: number = 100;
+        private static SHOT_DELAY: number = .1; // seconds
 
         heading: number = Math.PI / 2.0; // facing north by default
         rotation_speed: number = 150 * Math.PI / 180.0;
         acceleration: number = 300;
-        lastFire: number = 0;
+        timeSinceLastFiring: number = Spaceship.SHOT_DELAY; // seconds
 
         constructor(pos: number[]) {
             super(pos, [0, 0], Spaceship.SPRITE_RADIUS * Spaceship.SCALE);
+        }
+
+        update(dt: number, dimensions: number[]) {
+            super.update(dt, dimensions);
+            this.timeSinceLastFiring += dt;
         }
 
         burn(dt: number): void {
@@ -169,7 +178,7 @@ namespace Asteroids.Entities {
         }
 
         private canFire(): boolean {
-            return this.lastFire < Date.now() - Spaceship.SHOT_DELAY;
+            return this.timeSinceLastFiring > Spaceship.SHOT_DELAY;
         }
 
         fire(state: GameState): void {
@@ -177,9 +186,9 @@ namespace Asteroids.Entities {
                 let gunPos = this.gunPosition();
                 let speed_x = this.speed[0] - Math.cos(this.heading) * 8 * 60;
                 let speed_y = this.speed[1] - Math.sin(this.heading) * 8 * 60;
-                this.lastFire = Date.now();
+                this.timeSinceLastFiring = 0;
 
-                state.bullets.push(new Bullet([gunPos[0], gunPos[1]], [speed_x, speed_y], Date.now() + 1000));
+                state.bullets.push(new Bullet([gunPos[0], gunPos[1]], [speed_x, speed_y]));
             }
         }
 
