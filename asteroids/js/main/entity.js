@@ -214,9 +214,6 @@ var Asteroids;
                 ctx.fillStyle = "black";
                 ctx.fillRect(0, 0, state.dimensions[0], state.dimensions[1]);
             };
-            Background.prototype.update = function () {
-                // intentionally left blank
-            };
             return Background;
         }(Entity));
         Entities.Background = Background;
@@ -233,9 +230,6 @@ var Asteroids;
                     ctx.fillText("GAME OVER", (state.dimensions[0] - textWidth) / 2.0, state.dimensions[1] / 2.0);
                 }
             };
-            GameOverScreen.prototype.update = function () {
-                // intentionally left blank
-            };
             return GameOverScreen;
         }(Entity));
         Entities.GameOverScreen = GameOverScreen;
@@ -243,6 +237,7 @@ var Asteroids;
             __extends(DebugDisplay, _super);
             function DebugDisplay() {
                 _super.call(this, [0, 0], [0, 0], 0);
+                this.fps = 0;
             }
             DebugDisplay.prototype.render = function (ctx, state) {
                 if (state.debug) {
@@ -252,10 +247,14 @@ var Asteroids;
                     ctx.fillText("heading: " + this.roundToTwo(state.spaceship.heading), 20, 40);
                     ctx.fillText("pos_x: " + this.roundToTwo(state.spaceship.pos[0]), 20, 60);
                     ctx.fillText("pos_y: " + this.roundToTwo(state.spaceship.pos[1]), 20, 80);
+                    ctx.fillText("FPS: " + this.fps, 10, 100);
                 }
             };
             DebugDisplay.prototype.roundToTwo = function (num) {
                 return Math.round(num * 100) / 100;
+            };
+            DebugDisplay.prototype.update = function (dt) {
+                this.fps = Math.round(1 / dt);
             };
             return DebugDisplay;
         }(Entity));

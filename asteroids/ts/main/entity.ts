@@ -244,10 +244,6 @@ namespace Asteroids.Entities {
             ctx.fillStyle = "black";
             ctx.fillRect(0, 0, state.dimensions[0], state.dimensions[1]);
         }
-
-        update() {
-            // intentionally left blank
-        }
     }
 
     export class GameOverScreen extends Entity {
@@ -264,13 +260,11 @@ namespace Asteroids.Entities {
                 ctx.fillText("GAME OVER", (state.dimensions[0] - textWidth) / 2.0, state.dimensions[1] / 2.0);
             }
         }
-
-        update() {
-            // intentionally left blank
-        }
     }
 
     export class DebugDisplay extends Entity {
+        fps: number = 0;
+        
         constructor() {
             super([0, 0], [0, 0], 0);
         }
@@ -284,11 +278,17 @@ namespace Asteroids.Entities {
 
                 ctx.fillText("pos_x: " + this.roundToTwo(state.spaceship.pos[0]), 20, 60 );
                 ctx.fillText("pos_y: " + this.roundToTwo(state.spaceship.pos[1]), 20, 80 );
+
+                ctx.fillText("FPS: " + this.fps, 10, 100);
             }
         }
 
         roundToTwo(num: number) {
             return Math.round(num * 100) / 100;
+        }
+
+        update(dt: number) {
+            this.fps = Math.round(1 / dt);
         }
     }
 }
