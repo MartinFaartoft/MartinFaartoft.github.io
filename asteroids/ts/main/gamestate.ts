@@ -3,6 +3,7 @@
 namespace Asteroids {
     import Background = Entities.Background;
     import GameOverScreen = Entities.GameOverScreen;
+    import WinScreen = Entities.WinScreen;
     import Entity = Entities.Entity;
     import Spaceship = Entities.Spaceship;
     import Bullet = Entities.Bullet;
@@ -13,12 +14,15 @@ namespace Asteroids {
     export class GameState {
         public background: Background = new Background();
         public gameOverScreen: GameOverScreen = new GameOverScreen();
+        public winScreen: WinScreen = new WinScreen();
         public debugDisplay: DebugDisplay = new DebugDisplay();
         public meteors: Meteor[] = [];
         public bullets: Bullet[] = [];
         public explosions: Explosion[] = [];
         public spaceship: Spaceship;
+        
         public isGameOver: boolean = false;
+        public isWinner: boolean = false;
 
         constructor(public dimensions: number[], 
                     public resourceManager: Framework.ResourceManager, 
@@ -37,6 +41,10 @@ namespace Asteroids {
             this.applyToEntities(e => e.update(dt, this));
             this.detectCollisions();
             this.garbageCollect();
+
+            if (this.meteors.length === 0) {
+                this.isWinner = true;
+            }
         }
 
         render(ctx: CanvasRenderingContext2D) {
@@ -61,11 +69,12 @@ namespace Asteroids {
             }
 
             action(this.gameOverScreen);
+            action(this.winScreen);
             action(this.debugDisplay);
         }
 
         handleInput(dt) {
-            if (!this.isGameOver) {
+            if (!this.isGameOver && !this.isWinner) {
                 if (Framework.isKeyDown("UP")) {
                     this.spaceship.burn(dt);
                 } else {

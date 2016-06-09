@@ -265,12 +265,28 @@ var Asteroids;
                     ctx.fillStyle = "red";
                     ctx.font = "80px comic sans";
                     var textWidth = ctx.measureText("GAME OVER").width;
-                    ctx.fillText("GAME OVER", (state.dimensions[0] - textWidth) / 2.0, state.dimensions[1] / 2.0);
+                    ctx.fillText("GAME OVER", (state.dimensions[0] - textWidth) / 2, state.dimensions[1] / 2);
                 }
             };
             return GameOverScreen;
         }(Entity));
         Entities.GameOverScreen = GameOverScreen;
+        var WinScreen = (function (_super) {
+            __extends(WinScreen, _super);
+            function WinScreen() {
+                _super.call(this, [0, 0], [0, 0], 0);
+            }
+            WinScreen.prototype.render = function (ctx, state) {
+                if (state.isWinner) {
+                    ctx.fillStyle = "green";
+                    ctx.font = "80px comic sans";
+                    var textWidth = ctx.measureText("WINNER").width;
+                    ctx.fillText("WINNER", (state.dimensions[0] - textWidth) / 2, state.dimensions[1] / 2);
+                }
+            };
+            return WinScreen;
+        }(Entity));
+        Entities.WinScreen = WinScreen;
         var DebugDisplay = (function (_super) {
             __extends(DebugDisplay, _super);
             function DebugDisplay() {
