@@ -62,9 +62,17 @@ namespace Asteroids.Entities {
         public static SCALING_FACTOR: number = 30;
         public static SPLIT_FACTOR: number = 3;
         public static POST_EXPLOSION_MAX_SPEED: number = 200;
+        private sprite: Framework.Sprite;
 
         constructor(pos: number[], speed: number[], public size: number) {
             super(pos, speed, size * Meteor.SCALING_FACTOR);
+
+            this.sprite = new Framework.Sprite([0, 0], [90, 90], [0, 1, 2], 3, "assets/meteor.png");
+        }
+
+        update(dt: number, state: GameState) {
+            super.update(dt, state);
+            this.sprite.update(dt);
         }
 
         private explode(): Meteor[] {
@@ -99,16 +107,12 @@ namespace Asteroids.Entities {
 
         render(ctx: CanvasRenderingContext2D, state: GameState) {
             for (let bc of this.getWrappedBoundingCircles(dimensions)) {
-                this.renderInternal(ctx, bc.pos[0], bc.pos[1], bc.radius);
+                this.renderInternal(ctx, bc.pos[0], bc.pos[1], bc.radius, state);
             }
         }
 
-        private renderInternal(ctx: CanvasRenderingContext2D, x: number, y: number, radius: number) {
-            ctx.fillStyle = "orange";
-            ctx.beginPath();
-            ctx.arc(x, y, radius, 0, Math.PI * 2, true);
-            ctx.closePath();
-            ctx.fill();
+        private renderInternal(ctx: CanvasRenderingContext2D, x: number, y: number, radius: number, state: GameState) {
+            this.sprite.render(ctx, state.resourceManager, [x - radius, y - radius], [radius * 2, radius * 2]);
         }
     }
 
@@ -215,16 +219,16 @@ namespace Asteroids.Entities {
 
         render(ctx: CanvasRenderingContext2D, state: GameState) {
             for (let bc of this.getWrappedBoundingCircles(state.dimensions)) {
-                this.renderInternal(ctx, bc.pos[0], bc.pos[1], this.heading);
+                this.renderInternal(ctx, bc.pos[0], bc.pos[1], this.heading, state);
             }
         }
 
-        private renderInternal(ctx: CanvasRenderingContext2D, x: number, y: number, heading: number) {
+        private renderInternal(ctx: CanvasRenderingContext2D, x: number, y: number, heading: number, state: GameState) {
             let scale = Spaceship.SCALE;
             ctx.save();
             ctx.translate(x, y);
             ctx.rotate(heading);
-            this.sprite.render(ctx, state.resourceManager, [-30, -30]);
+            this.sprite.render(ctx, state.resourceManager, [-30, -30], this.sprite.size);
             ctx.translate(x, y);
             ctx.restore();
         }

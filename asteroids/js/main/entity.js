@@ -59,7 +59,12 @@ var Asteroids;
             function Meteor(pos, speed, size) {
                 _super.call(this, pos, speed, size * Meteor.SCALING_FACTOR);
                 this.size = size;
+                this.sprite = new Framework.Sprite([0, 0], [90, 90], [0, 1, 2], 3, "assets/meteor.png");
             }
+            Meteor.prototype.update = function (dt, state) {
+                _super.prototype.update.call(this, dt, state);
+                this.sprite.update(dt);
+            };
             Meteor.prototype.explode = function () {
                 if (this.size === 1) {
                     return [];
@@ -86,15 +91,11 @@ var Asteroids;
             Meteor.prototype.render = function (ctx, state) {
                 for (var _i = 0, _a = this.getWrappedBoundingCircles(dimensions); _i < _a.length; _i++) {
                     var bc = _a[_i];
-                    this.renderInternal(ctx, bc.pos[0], bc.pos[1], bc.radius);
+                    this.renderInternal(ctx, bc.pos[0], bc.pos[1], bc.radius, state);
                 }
             };
-            Meteor.prototype.renderInternal = function (ctx, x, y, radius) {
-                ctx.fillStyle = "orange";
-                ctx.beginPath();
-                ctx.arc(x, y, radius, 0, Math.PI * 2, true);
-                ctx.closePath();
-                ctx.fill();
+            Meteor.prototype.renderInternal = function (ctx, x, y, radius, state) {
+                this.sprite.render(ctx, state.resourceManager, [x - radius, y - radius], [radius * 2, radius * 2]);
             };
             Meteor.SCALING_FACTOR = 30;
             Meteor.SPLIT_FACTOR = 3;
@@ -186,15 +187,15 @@ var Asteroids;
             Spaceship.prototype.render = function (ctx, state) {
                 for (var _i = 0, _a = this.getWrappedBoundingCircles(state.dimensions); _i < _a.length; _i++) {
                     var bc = _a[_i];
-                    this.renderInternal(ctx, bc.pos[0], bc.pos[1], this.heading);
+                    this.renderInternal(ctx, bc.pos[0], bc.pos[1], this.heading, state);
                 }
             };
-            Spaceship.prototype.renderInternal = function (ctx, x, y, heading) {
+            Spaceship.prototype.renderInternal = function (ctx, x, y, heading, state) {
                 var scale = Spaceship.SCALE;
                 ctx.save();
                 ctx.translate(x, y);
                 ctx.rotate(heading);
-                this.sprite.render(ctx, state.resourceManager, [-30, -30]);
+                this.sprite.render(ctx, state.resourceManager, [-30, -30], this.sprite.size);
                 ctx.translate(x, y);
                 ctx.restore();
             };

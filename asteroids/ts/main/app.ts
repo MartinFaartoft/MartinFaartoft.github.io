@@ -29,4 +29,4 @@ init();
 
 // load resources and start game when ready
 resourceManager.onReady(() => engine.run());
-resourceManager.preload(["assets/spaceship.png"]);
+resourceManager.preload(["assets/spaceship.png", "assets/meteor.png"]);
