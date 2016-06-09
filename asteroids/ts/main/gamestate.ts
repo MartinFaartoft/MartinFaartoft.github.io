@@ -7,6 +7,7 @@ namespace Asteroids {
     import Spaceship = Entities.Spaceship;
     import Bullet = Entities.Bullet;
     import Meteor = Entities.Meteor;
+    import Explosion = Entities.Explosion;
     import DebugDisplay = Entities.DebugDisplay;
 
     export class GameState {
@@ -15,6 +16,7 @@ namespace Asteroids {
         public debugDisplay: DebugDisplay = new DebugDisplay();
         public meteors: Meteor[] = [];
         public bullets: Bullet[] = [];
+        public explosions: Explosion[] = [];
         public spaceship: Spaceship;
         public isGameOver: boolean = false;
 
@@ -27,6 +29,7 @@ namespace Asteroids {
         garbageCollect() {
             this.bullets = this.bullets.filter(b => !b.destroyed);
             this.meteors = this.meteors.filter(m => !m.destroyed);
+            this.explosions = this.explosions.filter(e => !e.destroyed)
         }
 
         update(dt: number) {
@@ -45,6 +48,10 @@ namespace Asteroids {
 
             action(this.spaceship);
 
+            for (let e of this.explosions) {
+                action(e);
+            }
+
             for (let m of this.meteors) {
                 action(m);
             }
@@ -61,6 +68,8 @@ namespace Asteroids {
             if (!this.isGameOver) {
                 if (Framework.isKeyDown("UP")) {
                     this.spaceship.burn(dt);
+                } else {
+                    this.spaceship.stopBurn();
                 }
 
                 if (Framework.isKeyDown("LEFT")) {

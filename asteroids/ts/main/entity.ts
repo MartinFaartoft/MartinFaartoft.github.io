@@ -140,6 +140,7 @@ namespace Asteroids.Entities {
         collideWith(other: Entity, state: GameState) {
             if (other instanceof Meteor) {
                 this.destroyed = true;
+                state.explosions.push(new Explosion([this.pos[0], this.pos[1]]))
             }
         }
 
@@ -153,27 +154,30 @@ namespace Asteroids.Entities {
     }
 
     export class Spaceship extends Entity implements Collidable {
-        public static SCALE: number = 15;
-        private static SPRITE_RADIUS: number = 2;
         static SHOT_DELAY: number = .1; // seconds
-
-        private sprite: Framework.Sprite;
+        static RADIUS: number = 29;
+        
+        private spaceShipSprite: Framework.Sprite;
+        private burnSprite: Framework.Sprite;
 
         heading: number = Math.PI / 2.0; // facing north by default
         rotation_speed: number = 150 * Math.PI / 180.0;
         acceleration: number = 300;
         timeSinceLastFiring: number = Spaceship.SHOT_DELAY; // seconds
+        burning: boolean = false;
 
         constructor(pos: number[]) {
-            super(pos, [0, 0], Spaceship.SPRITE_RADIUS * Spaceship.SCALE);
+            super(pos, [0, 0], Spaceship.RADIUS);
 
-            this.sprite = new Framework.Sprite([0, 0], [60, 60], [0, 1, 2], 10, "assets/spaceship.png");
+            this.spaceShipSprite = new Framework.Sprite([0, 0], [59, 59], [0, 1, 2], 5, "assets/spaceship.png");
+            this.burnSprite = new Framework.Sprite([0, 0], [59, 59], [0, 1, 2, 1], 8, "assets/burn.png");
         }
 
         update(dt: number, state: GameState) {
             super.update(dt, state);
             this.timeSinceLastFiring += dt;
-            this.sprite.update(dt);
+            this.spaceShipSprite.update(dt);
+            this.burnSprite.update(dt);
         }
 
         burn(dt: number): void {
@@ -182,6 +186,12 @@ namespace Asteroids.Entities {
 
             this.speed[0] -= d_x * this.acceleration * dt;
             this.speed[1] -= d_y * this.acceleration * dt;
+
+            this.burning = true;
+        }
+
+        stopBurn() {
+            this.burning = false;
         }
 
         private gunPosition(): number[] {
@@ -215,21 +225,58 @@ namespace Asteroids.Entities {
         }
 
         collideWith(other: Entity, state: GameState) {
-            if (other instanceof Meteor) {
+            if (!state.isGameOver && other instanceof Meteor) {
                 this.destroyed = true;
                 state.isGameOver = true;
+                state.explosions.push(new Explosion([this.pos[0], this.pos[1]]));
+            }
+        }
+
+        render(ctx: CanvasRenderingContext2D, state: GameState) {
+            if (!this.destroyed) {
+                for (let bc of this.getWrappedBoundingCircles(state.dimensions)) {
+                    this.renderInternal(ctx, bc.pos[0], bc.pos[1], this.heading, state);
+                }
+            }
+        }
+
+        private renderInternal(ctx: CanvasRenderingContext2D, x: number, y: number, heading: number, state: GameState) {
+            if (this.burning) {
+                this.burnSprite.render(ctx, state.resourceManager, [x, y], this.burnSprite.spriteSize, this.heading);
+            }
+            this.spaceShipSprite.render(ctx, state.resourceManager, [x, y], this.spaceShipSprite.spriteSize, this.heading);
+        }
+    }
+
+    export class Explosion extends Entity {
+        static LIFESPAN: number = .5;
+        sprite: Framework.Sprite;
+        age: number = 0;
+        
+        constructor(pos: number[]) {
+            super(pos, [0, 0], 60);
+
+            this.sprite = new Framework.Sprite([0, 0], [120, 120], [0, 2, 1, 0, 1, 2, 0], 8, "assets/explosion.png");
+        }
+
+        update(dt: number) {
+            this.sprite.update(dt);
+            this.age += dt;
+            if (this.age > Explosion.LIFESPAN) {
+                this.destroyed = true;
             }
         }
 
         render(ctx: CanvasRenderingContext2D, state: GameState) {
             for (let bc of this.getWrappedBoundingCircles(state.dimensions)) {
-                this.renderInternal(ctx, bc.pos[0], bc.pos[1], this.heading, state);
+                this.renderInternal(ctx, bc.pos[0], bc.pos[1], state);
             }
         }
 
-        private renderInternal(ctx: CanvasRenderingContext2D, x: number, y: number, heading: number, state: GameState) {
-            this.sprite.render(ctx, state.resourceManager, [x, y], this.sprite.spriteSize, this.heading);
+        private renderInternal(ctx: CanvasRenderingContext2D, x: number, y: number, state: GameState) {
+            this.sprite.render(ctx, state.resourceManager, [x, y], this.sprite.spriteSize, 0);
         }
+
     }
 
     export class Background extends Entity {

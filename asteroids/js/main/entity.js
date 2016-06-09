@@ -123,6 +123,7 @@ var Asteroids;
             Bullet.prototype.collideWith = function (other, state) {
                 if (other instanceof Meteor) {
                     this.destroyed = true;
+                    state.explosions.push(new Explosion([this.pos[0], this.pos[1]]));
                 }
             };
             Bullet.prototype.render = function (ctx) {
@@ -140,23 +141,30 @@ var Asteroids;
         var Spaceship = (function (_super) {
             __extends(Spaceship, _super);
             function Spaceship(pos) {
-                _super.call(this, pos, [0, 0], Spaceship.SPRITE_RADIUS * Spaceship.SCALE);
+                _super.call(this, pos, [0, 0], Spaceship.RADIUS);
                 this.heading = Math.PI / 2.0; // facing north by default
                 this.rotation_speed = 150 * Math.PI / 180.0;
                 this.acceleration = 300;
                 this.timeSinceLastFiring = Spaceship.SHOT_DELAY; // seconds
-                this.sprite = new Framework.Sprite([0, 0], [60, 60], [0, 1, 2], 10, "assets/spaceship.png");
+                this.burning = false;
+                this.spaceShipSprite = new Framework.Sprite([0, 0], [59, 59], [0, 1, 2], 5, "assets/spaceship.png");
+                this.burnSprite = new Framework.Sprite([0, 0], [59, 59], [0, 1, 2, 1], 8, "assets/burn.png");
             }
             Spaceship.prototype.update = function (dt, state) {
                 _super.prototype.update.call(this, dt, state);
                 this.timeSinceLastFiring += dt;
-                this.sprite.update(dt);
+                this.spaceShipSprite.update(dt);
+                this.burnSprite.update(dt);
             };
             Spaceship.prototype.burn = function (dt) {
                 var d_x = Math.cos(this.heading);
                 var d_y = Math.sin(this.heading);
                 this.speed[0] -= d_x * this.acceleration * dt;
                 this.speed[1] -= d_y * this.acceleration * dt;
+                this.burning = true;
+            };
+            Spaceship.prototype.stopBurn = function () {
+                this.burning = false;
             };
             Spaceship.prototype.gunPosition = function () {
                 return [this.pos[0] - Math.cos(this.heading) * this.radius,
@@ -183,26 +191,58 @@ var Asteroids;
                 this.heading = this.heading % (Math.PI * 2);
             };
             Spaceship.prototype.collideWith = function (other, state) {
-                if (other instanceof Meteor) {
+                if (!state.isGameOver && other instanceof Meteor) {
                     this.destroyed = true;
                     state.isGameOver = true;
+                    state.explosions.push(new Explosion([this.pos[0], this.pos[1]]));
                 }
             };
             Spaceship.prototype.render = function (ctx, state) {
-                for (var _i = 0, _a = this.getWrappedBoundingCircles(state.dimensions); _i < _a.length; _i++) {
-                    var bc = _a[_i];
-                    this.renderInternal(ctx, bc.pos[0], bc.pos[1], this.heading, state);
+                if (!this.destroyed) {
+                    for (var _i = 0, _a = this.getWrappedBoundingCircles(state.dimensions); _i < _a.length; _i++) {
+                        var bc = _a[_i];
+                        this.renderInternal(ctx, bc.pos[0], bc.pos[1], this.heading, state);
+                    }
                 }
             };
             Spaceship.prototype.renderInternal = function (ctx, x, y, heading, state) {
-                this.sprite.render(ctx, state.resourceManager, [x, y], this.sprite.spriteSize, this.heading);
+                if (this.burning) {
+                    this.burnSprite.render(ctx, state.resourceManager, [x, y], this.burnSprite.spriteSize, this.heading);
+                }
+                this.spaceShipSprite.render(ctx, state.resourceManager, [x, y], this.spaceShipSprite.spriteSize, this.heading);
             };
-            Spaceship.SCALE = 15;
-            Spaceship.SPRITE_RADIUS = 2;
             Spaceship.SHOT_DELAY = .1; // seconds
+            Spaceship.RADIUS = 29;
             return Spaceship;
         }(Entity));
         Entities.Spaceship = Spaceship;
+        var Explosion = (function (_super) {
+            __extends(Explosion, _super);
+            function Explosion(pos) {
+                _super.call(this, pos, [0, 0], 60);
+                this.age = 0;
+                this.sprite = new Framework.Sprite([0, 0], [120, 120], [0, 2, 1, 0, 1, 2, 0], 8, "assets/explosion.png");
+            }
+            Explosion.prototype.update = function (dt) {
+                this.sprite.update(dt);
+                this.age += dt;
+                if (this.age > Explosion.LIFESPAN) {
+                    this.destroyed = true;
+                }
+            };
+            Explosion.prototype.render = function (ctx, state) {
+                for (var _i = 0, _a = this.getWrappedBoundingCircles(state.dimensions); _i < _a.length; _i++) {
+                    var bc = _a[_i];
+                    this.renderInternal(ctx, bc.pos[0], bc.pos[1], state);
+                }
+            };
+            Explosion.prototype.renderInternal = function (ctx, x, y, state) {
+                this.sprite.render(ctx, state.resourceManager, [x, y], this.sprite.spriteSize, 0);
+            };
+            Explosion.LIFESPAN = .5;
+            return Explosion;
+        }(Entity));
+        Entities.Explosion = Explosion;
         var Background = (function (_super) {
             __extends(Background, _super);
             function Background() {

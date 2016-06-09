@@ -22,5 +22,5 @@ function init() {
 init();
 // load resources and start game when ready
 resourceManager.onReady(function () { return engine.run(); });
-resourceManager.preload(["assets/spaceship.png", "assets/meteor.png"]);
+resourceManager.preload(["assets/spaceship.png", "assets/meteor.png", "assets/burn.png", "assets/explosion.png"]);
 //# sourceMappingURL=app.js.map

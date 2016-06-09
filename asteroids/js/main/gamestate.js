@@ -15,12 +15,14 @@ var Asteroids;
             this.debugDisplay = new DebugDisplay();
             this.meteors = [];
             this.bullets = [];
+            this.explosions = [];
             this.isGameOver = false;
             this.spaceship = new Spaceship([dimensions[0] / 2.0, dimensions[1] / 2.0]);
         }
         GameState.prototype.garbageCollect = function () {
             this.bullets = this.bullets.filter(function (b) { return !b.destroyed; });
             this.meteors = this.meteors.filter(function (m) { return !m.destroyed; });
+            this.explosions = this.explosions.filter(function (e) { return !e.destroyed; });
         };
         GameState.prototype.update = function (dt) {
             var _this = this;
@@ -36,12 +38,16 @@ var Asteroids;
         GameState.prototype.applyToEntities = function (action) {
             action(this.background);
             action(this.spaceship);
-            for (var _i = 0, _a = this.meteors; _i < _a.length; _i++) {
-                var m = _a[_i];
+            for (var _i = 0, _a = this.explosions; _i < _a.length; _i++) {
+                var e = _a[_i];
+                action(e);
+            }
+            for (var _b = 0, _c = this.meteors; _b < _c.length; _b++) {
+                var m = _c[_b];
                 action(m);
             }
-            for (var _b = 0, _c = this.bullets; _b < _c.length; _b++) {
-                var b = _c[_b];
+            for (var _d = 0, _e = this.bullets; _d < _e.length; _d++) {
+                var b = _e[_d];
                 action(b);
             }
             action(this.gameOverScreen);
@@ -51,6 +57,9 @@ var Asteroids;
             if (!this.isGameOver) {
                 if (Framework.isKeyDown("UP")) {
                     this.spaceship.burn(dt);
+                }
+                else {
+                    this.spaceship.stopBurn();
                 }
                 if (Framework.isKeyDown("LEFT")) {
                     this.spaceship.rotateCounterClockWise(dt);
