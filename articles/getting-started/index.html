@@ -23,12 +23,12 @@
         <article class="article">
           <section class="content"><p>In which we install Eiffel Studio and look closely at the Hello World&nbsp;example.</p>
 <p><span class="more"></span></p>
-<h2>Installing Eiffel Studio&nbsp;7.3</h2>
-<p>Go and grab <a href="https://www2.eiffel.com/download/download_info.aspx?id=eiffelstudio&amp;info=false&amp;mirrors=eiffelstudio">Eiffel Studio 7.3</a> (requires a free account, but at the time of writing, your friends at <a href="http://www.bugmenot.com/">bugmenot</a> have got you&nbsp;covered).</p>
+<h2 id="installing-eiffel-studio-7-3">Installing Eiffel Studio&nbsp;7.3</h2>
+<p>Go and grab <a href="https://www2.eiffel.com/download/download_info.aspx?id=eiffelstudio&amp;info=false&amp;mirrors=eiffelstudio">Eiffel Studio 7.3</a> (requires a free account, but at the time of writing, your friends at <a href="http://www.bugmenot.com">bugmenot</a> have got you&nbsp;covered).</p>
 <p>Installation on Windows is straightforward. If you wanna install it on mac, be warned - nobody in our class, instructors included, could get it to run on <span class="caps">OS</span> X in a stable manner. It works just fine on a virtual machine&nbsp;though.</p>
 <p>After installing, you should be able to start Eiffel Studio and get a screen looking somewhat like this&nbsp;one:</p>
 <p><img src="/articles/getting-started/create_project.png" alt="Create Project Dialog" title="Create Project Dialog"></p>
-<h2>Hello&nbsp;World</h2>
+<h2 id="hello-world">Hello&nbsp;World</h2>
 <p>Go ahead and create a new Basic Application, this should generate a new project for you, with the following <em><span class="caps">APPLICATION</span></em> class (Eiffel classnames are all&nbsp;uppercase)</p>
 <pre><code>note
     description : &quot;foo application root class&quot;
@@ -53,16 +53,16 @@ feature {NONE} -- Initialization
             print (&quot;Hello Eiffel World!%N&quot;)
         end
 
-end</code></pre>
-<p>Now click the Run icon, and watch the output window pop open. So far so&nbsp;good!</p>
-<p>Taking a quick look at the <em><span class="caps">APPLICATION</span></em> class, let&#39;s see what we can&nbsp;divine.</p>
-<p>The note part in the beginning seems to be optional, there might be built-in tools that will parse the key-value pairs up there, but I don&#39;t know&nbsp;any.</p>
+end
+</code></pre><p>Now click the Run icon, and watch the output window pop open. So far so&nbsp;good!</p>
+<p>Taking a quick look at the <em><span class="caps">APPLICATION</span></em> class, let’s see what we can&nbsp;divine.</p>
+<p>The note part in the beginning seems to be optional, there might be built-in tools that will parse the key-value pairs up there, but I don’t know&nbsp;any.</p>
 <p>The classname is preceded by the keyword <em>class</em>.</p>
 <p>Our class inherits from the class <em><span class="caps">ARGUMENTS</span></em></p>
 <p>The <em>create</em> keyword tells which of the class members that are constructors - in our case <em>make</em>.</p>
 <p>The feature {<span class="caps">NONE</span>} part looks scary, let us not tackle that just yet. But inside it, is our constructor <em>make</em>, along with some friendly&nbsp;comments.</p>
 <p>Method bodies are enclosed in a <em>do</em> <em>end</em> pair, and the <em>make</em> method here simply prints a string to standard&nbsp;output.</p>
-<p>Finally the <em>end</em> marks the end of the <span class="caps">APPLICATION</span> class. Doesn&#39;t look too&nbsp;bad.</p>
+<p>Finally the <em>end</em> marks the end of the <span class="caps">APPLICATION</span> class. Doesn’t look too&nbsp;bad.</p>
 <p>Random thoughts from playing with Hello&nbsp;World:</p>
 <ul>
 <li><em>%</em> is the character escape&nbsp;sequence</li>
@@ -92,7 +92,7 @@ end</code></pre>
         <section class="about">
         </section>
         <section class="copy">
-          <p>&copy; 2013 Martin Faartoft &mdash; powered by&nbsp;<a href="https://github.com/jnordberg/wintersmith">Wintersmith</a>
+          <p>&copy; 2016 Martin Faartoft &mdash; powered by&nbsp;<a href="https://github.com/jnordberg/wintersmith">Wintersmith</a>
           </p>
         </section>
       </div>

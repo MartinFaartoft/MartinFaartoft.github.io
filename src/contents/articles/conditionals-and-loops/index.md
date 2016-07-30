@@ -1,5 +1,5 @@
 ---
-title: Conditionals and Loops
+title: Eiffel - Conditionals and Loops
 author: martin-faartoft
 date: 2013-10-21
 template: article.jade

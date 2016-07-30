@@ -1,5 +1,5 @@
 ---
-title: .gitignore
+title: Eiffel - .gitignore
 author: martin-faartoft
 date: 2013-10-22
 template: article.jade

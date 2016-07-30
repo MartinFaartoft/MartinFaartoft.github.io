@@ -1,5 +1,5 @@
 ---
-title: Introduction
+title: Eiffel - Introduction
 author: martin-faartoft
 date: 2013-10-03
 template: article.jade

@@ -23,7 +23,7 @@
         <article class="article">
           <section class="content"><p>In which we look at flow control structures in&nbsp;Eiffel.</p>
 <p><span class="more"></span></p>
-<h2>Conditionals</h2>
+<h2 id="conditionals">Conditionals</h2>
 <p><em>if</em> statements look and act just like you would&nbsp;expect</p>
 <pre><code>if [some condition] then
     [statement]
@@ -31,24 +31,24 @@ elseif
     [statement]
 else
     [statement]
-end</code></pre>
-<p>The <em>elseif</em> and <em>else</em> can be&nbsp;omitted</p>
+end
+</code></pre><p>The <em>elseif</em> and <em>else</em> can be&nbsp;omitted</p>
 <p><em>switch</em> </p>
 <pre><code>inspect val
     when [val1] then [statement]
     when [val2, val3] then [statement] --Eiffel allows multiple values to trigger a single case
     else
         [default statement] --no matching &#39;when&#39; value found
-    end</code></pre>
-<h2>Loops</h2>
+    end
+</code></pre><h2 id="loops">Loops</h2>
 <p>Eiffel has two looping constructs, the <em>across</em> loop and the <em>from-until</em>&nbsp;loop.</p>
-<h3>Across</h3>
+<h3 id="across">Across</h3>
 <p>The <em>across</em> loop is a recent addition to the language, and provides a compact construct for iterating over a collection. The semantics of <em>across</em> is the same as the <em>foreach</em> loops known from both java and&nbsp;C#</p>
 <p>example:</p>
 <pre><code>across collection as cursor loop 
     print (cursor.item) 
-end</code></pre>
-<h3>From-until</h3>
+end
+</code></pre><h3 id="from-until">From-until</h3>
 <p>The <em>from-until</em> loop is the swiss army knife of Eiffel loops (and until recently the only Eiffel loop).
 It takes up a lot of vertical screen space, but works just like you would&nbsp;expect.</p>
 <pre><code>from
@@ -58,8 +58,8 @@ until
 loop
     print(i) --do something with i
     i := i + 1 --increment i
-end</code></pre>
-<p>or, looping over a collection of&nbsp;objects</p>
+end
+</code></pre><p>or, looping over a collection of&nbsp;objects</p>
 <pre><code>from
     collection.start --initialize
 until
@@ -67,8 +67,8 @@ until
 loop
     print(collection.item)
     collection.forth --increment the collection pointer
-end</code></pre>
-<p>note that Eiffel has no keywords that interrupt program flow, such as <em>break</em> or <em>continue</em>. These can be simulated using boolean expressions and&nbsp;conditionals.</p>
+end
+</code></pre><p>note that Eiffel has no keywords that interrupt program flow, such as <em>break</em> or <em>continue</em>. These can be simulated using boolean expressions and&nbsp;conditionals.</p>
 <p>If Eiffel does not include your favorite looping construct, you can bash the from-until loop until it behaves like&nbsp;a</p>
 <p><em>while</em>&nbsp;loop:</p>
 <pre><code>from
@@ -77,8 +77,8 @@ until
     stop = true
 loop
     --do stuff
-end</code></pre>
-<p><em>do-while</em>&nbsp;loop:</p>
+end
+</code></pre><p><em>do-while</em>&nbsp;loop:</p>
 <pre><code>from
     stop := false
     --do stuff
@@ -86,8 +86,8 @@ until
     stop = true
 loop
     --do stuff again
-end</code></pre>
-<p>… you get the&nbsp;idea.</p>
+end
+</code></pre><p>… you get the&nbsp;idea.</p>
 </section>
         </article>
       </div>
@@ -110,7 +110,7 @@ end</code></pre>
         <section class="about">
         </section>
         <section class="copy">
-          <p>&copy; 2013 Martin Faartoft &mdash; powered by&nbsp;<a href="https://github.com/jnordberg/wintersmith">Wintersmith</a>
+          <p>&copy; 2016 Martin Faartoft &mdash; powered by&nbsp;<a href="https://github.com/jnordberg/wintersmith">Wintersmith</a>
           </p>
         </section>
       </div>

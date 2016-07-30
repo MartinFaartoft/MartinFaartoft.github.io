@@ -1,5 +1,5 @@
 ---
-title: Getting Started
+title: Eiffel - Getting Started
 author: martin-faartoft
 date: 2013-10-03
 template: article.jade
