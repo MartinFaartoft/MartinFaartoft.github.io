@@ -5,11 +5,189 @@
     <atom:link href="http://ftft.dk/feed.xml" rel="self" type="application/rss+xml"></atom:link>
     <link>http://ftft.dk</link>
     <description>Writing things down so I don't have to remember</description>
-    <pubDate>Tue, 22 Oct 2013 02:00:00 +0200</pubDate>
+    <pubDate>Sat, 30 Jul 2016 02:00:00 +0200</pubDate>
     <generator>Wintersmith - https://github.com/jnordberg/wintersmith</generator>
     <language>en</language>
     <item>
-      <title>.gitignore</title>
+      <title>Getting started with Docker</title>
+      <link>http://ftft.dk/articles/docker-getting-started/</link>
+      <pubDate>Sat, 30 Jul 2016 02:00:00 +0200</pubDate>
+      <guid isPermaLink="true">http://ftft.dk/articles/docker-getting-started/</guid>
+      <author></author>
+      <description>&lt;p&gt;Documenting my first experiences with building and running Docker images.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&quot;more&quot;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;h2 id=&quot;motivation&quot;&gt;Motivation&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.docker.com/products/docker&quot;&gt;Docker 1.12&lt;/a&gt; was released a few days ago, this time with a native Windows solution that does not depend on VirtualBox.&lt;/p&gt;
+&lt;p&gt;A few months back, I wrote a tiny Python script to send me weekly emails reminding me of upcoming family birthdays. I deployed it on an Azure VM and scheduled it using &lt;em&gt;cron&lt;/em&gt;, where it hummed along for weeks until suddenly stopping.&lt;/p&gt;
+&lt;p&gt;When I read the Docker 1.12 announcement, I decided that I wanted to containerize my Python script and learn some Docker while doing so.&lt;/p&gt;
+&lt;h2 id=&quot;installation&quot;&gt;Installation&lt;/h2&gt;
+&lt;p&gt;The Docker binaries for Windows are distributed as an msi installer, so &lt;a href=&quot;https://download.docker.com/win/stable/InstallDocker.msi&quot;&gt;installation&lt;/a&gt; is extremely straight forward.&lt;/p&gt;
+&lt;p&gt;After succesful installation, a small Docker whale now graces the system tray, and powershell / cmd accepts Docker commands.&lt;/p&gt;
+&lt;h2 id=&quot;getting-started&quot;&gt;Getting started&lt;/h2&gt;
+&lt;p&gt;I spent a bit of time going through the &lt;a href=&quot;https://docs.docker.com/docker-for-windows/#/step-1-install-docker-for-windows&quot;&gt;Getting started&lt;/a&gt; guide, and highly recommend doing so.&lt;/p&gt;
+&lt;p&gt;The two main Docker abstractions are _container_s and _image_s. Images are blueprints for how to build containers, and containers are sandboxed environments capable of executing the code you want.&lt;/p&gt;
+&lt;h3 id=&quot;getting-our-fingers-dirty&quot;&gt;Getting our fingers dirty&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;PS C:\code\remindme&amp;gt; docker run hello-world
+Unable to find image &amp;#39;hello-world:latest&amp;#39; locally
+latest: Pulling from library/hello-world
+
+c04b14da8d14: Pull complete
+Digest: sha256:0256e8a36e2070f7bf2d0b0763dbabdd67798512411de4cdcf9431a1feb60fd9
+Status: Downloaded newer image for hello-world:latest
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the &amp;quot;hello-world&amp;quot; image from the Docker Hub.
+ 3. The Docker daemon created a new container from that image which runs the
+    executable that produces the output you are currently reading.
+ 4. The Docker daemon streamed that output to the Docker client, which sent it
+    to your terminal.
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Interesting! So we got an image from somewhere called the Docker Hub and used that to create and run a container. Let’s use some basic Docker commands to see what traces are left.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PS C:\code\remindme&amp;gt; docker ps -a
+CONTAINER ID  IMAGE       COMMAND   CREATED        STATUS                  PORTS  NAMES
+1f7fdd77fb5f  hello-world &amp;quot;/hello&amp;quot;  4 minutes ago  Exited (0) 4 minutes ago       fervent_jones
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;docker ps&lt;/code&gt; shows all running containers on the current system, and the &lt;code&gt;-a&lt;/code&gt; flag includes containers that have been stopped or exited by themselves.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PS C:\code\remindme&amp;gt; docker images
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+hello-world         latest              c54a2cc56cbb        4 weeks ago         1.848 kB
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;docker images&lt;/code&gt; shows all images on the current system&lt;/p&gt;
+&lt;p&gt;Let’s go ahead and remove the &lt;em&gt;hello-world&lt;/em&gt; container and image, now that we’re happy that Docker is working as intended.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PS C:\code\remindme&amp;gt; docker rm fervent_jones
+fervent_jones
+PS C:\code\remindme&amp;gt; docker rmi hello-world
+Untagged: hello-world:latest
+Untagged: hello-world@sha256:0256e8a36e2070f7bf2d0b0763dbabdd67798512411de4cdcf9431a1feb60fd9
+Deleted: sha256:c54a2cc56cbb2f04003c1cd4507e118af7c0d340fe7e2720f70976c4b75237dc
+Deleted: sha256:a02596fdd012f22b03af6ad7d11fa590c57507558357b079c3e8cebceb4262d7
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&quot;creating-a-python-2-image-for-the-reminder-script&quot;&gt;Creating a Python 2 image for the reminder script&lt;/h2&gt;
+&lt;p&gt;A bit of searching led me to the official &lt;a href=&quot;https://hub.docker.com/_/python/&quot;&gt;python&lt;/a&gt; Docker repository, and the instructions are refreshingly simple: create a file called &lt;code&gt;Dockerfile&lt;/code&gt; with the following contents&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;FROM python:2-onbuild
+CMD [ &amp;quot;python&amp;quot;, &amp;quot;./your-daemon-or-script.py&amp;quot; ]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;put that file in the same folder as your-daemon-or-script.py, along with a requirements.txt file containing the name and version of each dependency that your code needs. Now when a container is built from this Dockerfile, your sourcecode will be copied to the container filesystem and &lt;em&gt;pip&lt;/em&gt; will install your dependencies.&lt;/p&gt;
+&lt;p&gt;After asking docker to build an image called &lt;em&gt;remind_me&lt;/em&gt; using the Dockerfile in current directory&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PS C:\code\remindme&amp;gt; docker build -t remind_me .
+Sending build context to Docker daemon 8.192 kB
+Step 1 : FROM python:2-onbuild
+# Executing 3 build triggers...
+Step 1 : COPY requirements.txt /usr/src/app/
+ ---&amp;gt; Using cache
+Step 1 : RUN pip install --no-cache-dir -r requirements.txt
+ ---&amp;gt; Using cache
+Step 1 : COPY . /usr/src/app
+ ---&amp;gt; 8f784a395965
+Removing intermediate container aeb671a9f42d
+Step 2 : MAINTAINER Martin Faartoft
+ ---&amp;gt; Running in 14ad101edd76
+ ---&amp;gt; 1a2eb1a37fca
+Removing intermediate container 14ad101edd76
+Step 3 : CMD python ./remind_me.py
+ ---&amp;gt; Running in 28abab9a80f0
+ ---&amp;gt; b80b24805438
+Removing intermediate container 28abab9a80f0
+Successfully built b80b24805438
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Now running the &lt;em&gt;remind_me&lt;/em&gt; image should execute the &lt;em&gt;remind_me.py&lt;/em&gt; script inside the container&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PS C:\code\remindme&amp;gt; docker run -d remind_me
+c9622e9fe52f7f58742fd6a8f9d3eb07ca5e4bd7780a41348325d82908952456
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The &lt;code&gt;-d&lt;/code&gt; flag tells Docker that the container should be run as a daemon, meaning the call won’t block and we won’t see output from it in the terminal. &lt;/p&gt;
+&lt;p&gt;Now let’s verify that the &lt;em&gt;remind_me.py&lt;/em&gt; script is actually running in the container&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PS C:\code\remindme&amp;gt; docker ps
+CONTAINER ID  IMAGE      COMMAND                 CREATED             STATUS              PORTS  NAMES
+c9622e9fe52f  remind_me  &amp;quot;python ./remind_me.p&amp;quot;  About a minute ago  Up About a minute          lonely_banach
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Looks promising, but let’s open a shell on the container and investigate&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PS C:\code\remindme&amp;gt; docker exec -it lonely_banach bash
+root@c9622e9fe52f:/usr/src/app# ps aux
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root         1  0.0  0.5  67440 12120 ?        Ss   14:49   0:00 python ./remind_me.py
+root         5  0.3  0.1  21924  3548 ?        Ss   14:52   0:00 bash
+root         9  0.0  0.1  19188  2404 ?        R+   14:52   0:00 ps aux
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Nice!&lt;/p&gt;
+&lt;p&gt;The image is complete and the container is working as expected, but I don’t want to host it on my own machine, instead let’s hand it off to an Azure VM somewhere.&lt;/p&gt;
+&lt;h2 id=&quot;hosting-docker-in-azure&quot;&gt;Hosting Docker in Azure&lt;/h2&gt;
+&lt;p&gt;Docker has support for many different cloud providers. As a Microsoft employee I get some Azure credits every month, so that’s what I’m going with. &lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://docs.docker.com/machine/drivers/azure/&quot;&gt;Docker - Microsoft Azure&lt;/a&gt; has instructions on how to create a Docker VM on Azure and configure your local Docker installation to access it.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PS C:\code\remindme&amp;gt; docker-machine create -d azure --azure-ssh-user &amp;lt;user&amp;gt; --azure-subscription-id &amp;lt;subscription id&amp;gt; &amp;lt;machine name&amp;gt;
+Creating CA: ...\machine\certs\ca.pem
+Creating client certificate: ...\machine\certs\cert.pem
+Running pre-create checks...
+(machine) Microsoft Azure: To sign in, use a web browser to open the page https://aka.ms/devicelogin. Enter the code XXXXXXXX to authenticate.
+(machine) Completed machine pre-create checks.
+Creating machine...
+(machine) Querying existing resource group.  name=&amp;quot;docker-machine&amp;quot;
+(machine) Creating resource group.  name=&amp;quot;docker-machine&amp;quot; location=&amp;quot;westus&amp;quot;
+(machine) Configuring availability set.  name=&amp;quot;docker-machine&amp;quot;
+(machine) Configuring network security group.  name=&amp;quot;machine-firewall&amp;quot; location=&amp;quot;westus&amp;quot;
+(machine) Querying if virtual network already exists.  name=&amp;quot;docker-machine-vnet&amp;quot; location=&amp;quot;westus&amp;quot;
+(machine) Configuring subnet.  cidr=&amp;quot;192.168.0.0/16&amp;quot; name=&amp;quot;docker-machine&amp;quot; vnet=&amp;quot;docker-machine-vnet&amp;quot;
+(machine) Creating public IP address.  name=&amp;quot;machine-ip&amp;quot; static=false
+(machine) Creating network interface.  name=&amp;quot;machine-nic&amp;quot;
+(machine) Creating storage account.  name=&amp;quot;...&amp;quot; location=&amp;quot;westus&amp;quot;
+(machine) Creating virtual machine.  name=&amp;quot;machine&amp;quot; location=&amp;quot;westus&amp;quot; size=&amp;quot;Standard_A2&amp;quot; username=&amp;quot;...&amp;quot; osImage=&amp;quot;canonical:UbuntuServer:15.10:latest&amp;quot;
+Waiting for machine to be running, this may take a few minutes...
+Detecting operating system of created instance...
+Waiting for SSH to be available...
+Detecting the provisioner...
+Provisioning with ubuntu(systemd)...
+Installing Docker...
+Copying certs to the local machine directory...
+Copying certs to the remote machine...
+Setting Docker configuration on the remote daemon...
+Checking connection to Docker...
+Docker is up and running!
+To see how to connect your Docker Client to the Docker Engine running on this virtual machine, run: C:\Program Files\Docker\Docker\Resources\bin\docker-machine.exe env machine
+PS C:\code\remindme&amp;gt; docker-machine env machine
+$Env:DOCKER_TLS_VERIFY = &amp;quot;1&amp;quot;
+$Env:DOCKER_HOST = &amp;quot;tcp://&amp;lt;ip&amp;gt;:&amp;lt;port&amp;gt;&amp;quot;
+$Env:DOCKER_CERT_PATH = &amp;quot;...\machine\machines\machine&amp;quot;
+$Env:DOCKER_MACHINE_NAME = &amp;quot;machine&amp;quot;
+# Run this command to configure your shell:
+# &amp;amp; &amp;quot;C:\Program Files\Docker\Docker\Resources\bin\docker-machine.exe&amp;quot; env machine | Invoke-Expression
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;That was easy. After running the command at the end of the output, my local Docker is now talking to my new Azure VM instead of my local machine. I can get the IP of the VM by running&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PS C:\code\remindme&amp;gt; docker-machine ip &amp;lt;machine name&amp;gt;
+&amp;lt;ip&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Now we just need to get our new &lt;em&gt;remind_me&lt;/em&gt; image from our local machine onto the VM. The easiest way would probably be to publish the image to &lt;a href=&quot;https://hub.docker.com/&quot;&gt;Docker Hub&lt;/a&gt;, but I wanted to avoid that because I was lazy and hardcoded the email credentials in the script (don’t do this!).&lt;/p&gt;
+&lt;p&gt;Instead I found out you can use docker to write an image to a .tar file, and load it on the VM.&lt;/p&gt;
+&lt;p&gt;From a new shell (the current one is speaking to the Azure VM and can’t see your local images)&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PS C:\code\remindme&amp;gt; docker save -o remind_me.tar remind_me
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Now there’s a big binary file lying around on disk, mine is ~700MB.&lt;/p&gt;
+&lt;p&gt;From the original shell:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PS C:\code\remindme&amp;gt; docker load -i remind_me.tar
+42755cf4ee95: Loading layer [==================================================&amp;gt;] 130.9 MB/130.9 MB
+d1c800db26c7: Loading layer [==================================================&amp;gt;] 45.57 MB/45.57 MB
+338cb8e0e9ed: Loading layer [==================================================&amp;gt;] 135.2 MB/135.2 MB
+ec0200a19d76: Loading layer [==================================================&amp;gt;] 326.4 MB/326.4 MB
+90022d1ffd75: Loading layer [==================================================&amp;gt;] 1.849 MB/1.849 MB
+617f1e2dcdae: Loading layer [==================================================&amp;gt;] 66.63 MB/66.63 MB
+ea132dd77599: Loading layer [==================================================&amp;gt;] 6.457 MB/6.457 MB
+dcccbfab90ed: Loading layer [==================================================&amp;gt;]  2.56 kB/2.56 kB
+5ca6990e4259: Loading layer [==================================================&amp;gt;] 3.584 kB/3.584 kB
+3ae9c1064699: Loading layer [==================================================&amp;gt;] 1.208 MB/1.208 MB
+9d7c6f61c309: Loading layer [==================================================&amp;gt;] 10.75 kB/10.75 kB
+Loaded image: remind_me
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This can take a long time, depending on your upload speed. When it completes, our new Docker image exists on the VM as well!&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PS C:\code\remindme&amp;gt; docker images
+REPOSITORY  TAG     IMAGE ID      CREATED      SIZE
+remind_me   latest  9f6919de65e8  1 hours ago  692.7 MB
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;And the only thing remaining is to spin up a container based on the image&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;PS C:\code\remindme&amp;gt; docker run -d --restart=always remind_me
+6372eafb11844e20a1c381b4e3baf6491b80177ad856e0734eb830f3a36cfe11
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;By adding the &lt;code&gt;--restart-always&lt;/code&gt; flag, we tell Docker that this container should be restarted in case the VM is restarted.&lt;/p&gt;
+&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;We managed to get Docker installed and running on a Windows machine. &lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;We built our own Docker image and tested it locally. &lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;We created an Azure VM, copied our image there, and finally built a container that runs in the background and even survives restarts. &lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;All without leaving the comfort of our command line.&lt;/p&gt;
+</description>
+    </item>
+    <item>
+      <title>Eiffel - .gitignore</title>
       <link>http://ftft.dk/articles/gitignore/</link>
       <pubDate>Tue, 22 Oct 2013 02:00:00 +0200</pubDate>
       <guid isPermaLink="true">http://ftft.dk/articles/gitignore/</guid>
@@ -46,7 +224,7 @@ EIFGENs/**/*
 &lt;/code&gt;&lt;/pre&gt;</description>
     </item>
     <item>
-      <title>Conditionals and Loops</title>
+      <title>Eiffel - Conditionals and Loops</title>
       <link>http://ftft.dk/articles/conditionals-and-loops/</link>
       <pubDate>Mon, 21 Oct 2013 02:00:00 +0200</pubDate>
       <guid isPermaLink="true">http://ftft.dk/articles/conditionals-and-loops/</guid>
@@ -121,22 +299,7 @@ end
 </description>
     </item>
     <item>
-      <title>Introduction</title>
-      <link>http://ftft.dk/articles/introduction/</link>
-      <pubDate>Thu, 03 Oct 2013 02:00:00 +0200</pubDate>
-      <guid isPermaLink="true">http://ftft.dk/articles/introduction/</guid>
-      <author></author>
-      <description>&lt;p&gt;In which we find out what the point of this whole thing is.&lt;/p&gt;
-&lt;p&gt;&lt;span class=&quot;more&quot;&gt;&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;I am currently studying an MSc in Computer Science. Part of the mandatory curriculum is a course called ‘Global Software Development’, in which groups of students from different countries, are tasked with writing non-trivial software systems in a programming language called Eiffel.&lt;/p&gt;
-&lt;p&gt;I know next to nothing about Eiffel.&lt;/p&gt;
-&lt;p&gt;Eiffel is an old, and somewhat obscure language. Google searches usually come back with results related to the tower in Paris, or if you are really lucky, with a result related to your problem, explaining how to solve it in Eiffel version 6.x, when the syntax was significantly different. (current version is 7.3).&lt;/p&gt;
-&lt;p&gt;So to make the Internet an infinitesimally better place, I will write a series of posts about how to program in Eiffel 7.3.&lt;/p&gt;
-&lt;p&gt;Apologies in advance for all the things I will get wrong. I’m learning this stuff as I go along.&lt;/p&gt;
-</description>
-    </item>
-    <item>
-      <title>Getting Started</title>
+      <title>Eiffel - Getting Started</title>
       <link>http://ftft.dk/articles/getting-started/</link>
       <pubDate>Thu, 03 Oct 2013 02:00:00 +0200</pubDate>
       <guid isPermaLink="true">http://ftft.dk/articles/getting-started/</guid>
@@ -190,6 +353,21 @@ end
 &lt;li&gt;Eiffel does not care about whitespace. Linebreaks and tab indents are purely cosmetic (think Java or C#).&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Next up: Flow control and more syntax!&lt;/p&gt;
+</description>
+    </item>
+    <item>
+      <title>Eiffel - Introduction</title>
+      <link>http://ftft.dk/articles/introduction/</link>
+      <pubDate>Thu, 03 Oct 2013 02:00:00 +0200</pubDate>
+      <guid isPermaLink="true">http://ftft.dk/articles/introduction/</guid>
+      <author></author>
+      <description>&lt;p&gt;In which we find out what the point of this whole thing is.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&quot;more&quot;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;I am currently studying an MSc in Computer Science. Part of the mandatory curriculum is a course called ‘Global Software Development’, in which groups of students from different countries, are tasked with writing non-trivial software systems in a programming language called Eiffel.&lt;/p&gt;
+&lt;p&gt;I know next to nothing about Eiffel.&lt;/p&gt;
+&lt;p&gt;Eiffel is an old, and somewhat obscure language. Google searches usually come back with results related to the tower in Paris, or if you are really lucky, with a result related to your problem, explaining how to solve it in Eiffel version 6.x, when the syntax was significantly different. (current version is 7.3).&lt;/p&gt;
+&lt;p&gt;So to make the Internet an infinitesimally better place, I will write a series of posts about how to program in Eiffel 7.3.&lt;/p&gt;
+&lt;p&gt;Apologies in advance for all the things I will get wrong. I’m learning this stuff as I go along.&lt;/p&gt;
 </description>
     </item>
   </channel>
